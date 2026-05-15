@@ -1,6 +1,6 @@
 //
 //  highlight.c
-//  QLMarkdown
+//  MarkdownViewer
 //
 //  Created by Sbarex on 04/08/24.
 //

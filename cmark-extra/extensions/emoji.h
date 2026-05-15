@@ -1,6 +1,6 @@
 //
 //  emoji.h
-//  QLMarkdown
+//  MarkdownViewer
 //
 //  Created by Sbarex on 12/12/20.
 //

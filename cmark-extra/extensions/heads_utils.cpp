@@ -1,6 +1,6 @@
 //
 //  heads_utils.cpp
-//  QLMarkdown
+//  MarkdownViewer
 //
 //  Created by Sbarex on 27/12/20.
 //

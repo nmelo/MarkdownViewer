@@ -1,6 +1,6 @@
 //
 //  syntaxhighlight.c
-//  QLMarkdown
+//  MarkdownViewer
 //
 //  Created by Sbarex on 09/12/20.
 //

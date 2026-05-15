@@ -1,6 +1,6 @@
 //
 //  math_ext.c
-//  QLMarkdown
+//  MarkdownViewer
 //
 //  Created by Sbarex on 14/04/23.
 //

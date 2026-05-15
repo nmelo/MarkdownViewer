@@ -1,6 +1,6 @@
 //
 //  Settings.swift
-//  QLMarkdown
+//  MarkdownViewer
 //
 //  Created by Sbarex on 13/12/20.
 //
@@ -215,7 +215,7 @@ enum StrikethroughMode: Int, Codable {
 }
 
 extension NSNotification.Name {
-    public static let QLMarkdownSettingsUpdated: NSNotification.Name = NSNotification.Name("org.sbarex.qlmarkdown-settings-changed")
+    public static let MarkdownViewerSettingsUpdated: NSNotification.Name = NSNotification.Name("org.sbarex.markdownviewer-settings-changed")
 }
 
 // MARK: -
@@ -263,7 +263,7 @@ class Settings: Codable {
     // MARK: - Static properties and methods
     
     /// Shared App Groups name.
-    static let appGroup = "group.org.sbarex.qlmarkdown"
+    static let appGroup = "group.org.sbarex.markdownviewer"
     
     /// Shared instance of the Settings.
     static let shared = {
@@ -290,7 +290,7 @@ class Settings: Codable {
 
             if let appBundle = Bundle(url: url) {
                 return appBundle
-            } else if let appBundle = Bundle(identifier: "org.sbarex.QLMarkdown") {
+            } else if let appBundle = Bundle(identifier: "org.sbarex.MarkdownViewer") {
                 return appBundle
             }
             // To access the main bundle, the extension must not be sandboxed (or must have a security exception entitlement to access the entire disk).
@@ -347,7 +347,7 @@ class Settings: Codable {
     static var aboutInfo: String {
         var title: String = "<a href='https://github.com/sbarex/QLMarkdown'>";
         if let info = Bundle.main.infoDictionary {
-            title += (info["CFBundleExecutable"] as? String ?? "QLMarkdown") + "</a>"
+            title += (info["CFBundleExecutable"] as? String ?? "MarkdownViewer") + "</a>"
             if let version = info["CFBundleShortVersionString"] as? String,
                 let build = info["CFBundleVersion"] as? String {
                 title += ", version \(version) (\(build))"
@@ -356,7 +356,7 @@ class Settings: Codable {
                 title += ".<br />\n\(copy.trimmingCharacters(in: CharacterSet(charactersIn: ". ")) + " with <span style='font-style: normal'>❤️</span>")"
             }
         } else {
-            title += "QLMarkdown</a>"
+            title += "MarkdownViewer</a>"
         }
         title += ".<br/>\nIf you like this app, <a href='https://www.buymeacoffee.com/sbarex'><strong>buy me a coffee</strong></a>!"
         return title
@@ -366,9 +366,9 @@ class Settings: Codable {
      * Informative hidden message.
      */
     static var aboutComment: String {
-        var title: String = "<!--\n\nFile generated with QLMarkdown [https://github.com/sbarex/QLMarkdown] - ";
+        var title: String = "<!--\n\nFile generated with MarkdownViewer [https://github.com/sbarex/QLMarkdown] - ";
         if let info = Bundle.main.infoDictionary {
-            title += (info["CFBundleExecutable"] as? String ?? "QLMarkdown")
+            title += (info["CFBundleExecutable"] as? String ?? "MarkdownViewer")
             if let version = info["CFBundleShortVersionString"] as? String,
                 let build = info["CFBundleVersion"] as? String {
                 title += ", version \(version) (\(build))"
@@ -658,7 +658,7 @@ class Settings: Codable {
             return
         }
         isMonitoring = true
-        DistributedNotificationCenter.default().addObserver(self, selector: #selector(self.handleSettingsChanged(_:)), name: .QLMarkdownSettingsUpdated, object: nil)
+        DistributedNotificationCenter.default().addObserver(self, selector: #selector(self.handleSettingsChanged(_:)), name: .MarkdownViewerSettingsUpdated, object: nil)
     }
     /**
      * Suspend the settings changes monitor.

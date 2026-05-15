@@ -1,6 +1,6 @@
 //
 //  Settings.swift
-//  QLMarkdown
+//  MarkdownViewer
 //
 //  Created by Sbarex on 25/12/20.
 //
@@ -252,7 +252,7 @@ extension Settings {
 
         defaults.synchronize()
         
-        DistributedNotificationCenter.default().post(name: .QLMarkdownSettingsUpdated, object: nil)
+        DistributedNotificationCenter.default().post(name: .MarkdownViewerSettingsUpdated, object: nil)
         
         return true
     }

@@ -1,6 +1,6 @@
 //
 //  MIMEType.h
-//  QLMarkdown
+//  MarkdownViewer
 //
 
 #ifndef MIMEType_h

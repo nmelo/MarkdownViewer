@@ -1,6 +1,6 @@
 //
 //  c_log.h
-//  QLMarkdown
+//  MarkdownViewer
 //
 //  Created by Sbarex on 21/03/22.
 //

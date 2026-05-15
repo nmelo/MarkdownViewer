@@ -1,6 +1,6 @@
 //
 //  heads.c
-//  QLMarkdown
+//  MarkdownViewer
 //
 //  Created by Sbarex on 27/12/20.
 //

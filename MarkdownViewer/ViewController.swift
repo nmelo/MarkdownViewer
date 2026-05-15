@@ -1,6 +1,6 @@
 //
 //  ViewController.swift
-//  QLMarkdown
+//  MarkdownViewer
 //
 //  Standalone viewer: renders a markdown file and live-reloads on change.
 //
@@ -20,7 +20,6 @@ class ViewController: NSViewController {
     }
 
     private var fileSource: DispatchSourceFileSystemObject?
-    private var dirSource: DispatchSourceFileSystemObject?
     private var reloadDebounce: DispatchWorkItem?
     private var pendingScrollRestore: CGFloat = 0
 
@@ -61,7 +60,6 @@ class ViewController: NSViewController {
 
     deinit {
         fileSource?.cancel()
-        dirSource?.cancel()
     }
 
     @discardableResult
@@ -88,7 +86,7 @@ class ViewController: NSViewController {
     }
 
     private func updateWindowTitle() {
-        view.window?.title = markdownFile?.lastPathComponent ?? "Markdown Viewer"
+        view.window?.title = markdownFile?.lastPathComponent ?? AppDelegate.defaultWindowTitle
         view.window?.representedURL = markdownFile
     }
 
@@ -148,9 +146,7 @@ class ViewController: NSViewController {
 
     private func restartFileWatch() {
         fileSource?.cancel()
-        dirSource?.cancel()
         fileSource = nil
-        dirSource = nil
 
         guard let file = markdownFile else { return }
 
@@ -174,22 +170,12 @@ class ViewController: NSViewController {
             self.fileSource = src
         }
 
-        // Also watch the parent dir to catch atomic-rename saves (VS Code, vim with backup, etc.).
-        let dirPath = file.deletingLastPathComponent().path
-        let dfd = open(FileManager.default.fileSystemRepresentation(withPath: dirPath), O_EVTONLY)
-        if dfd >= 0 {
-            let dsrc = DispatchSource.makeFileSystemObjectSource(
-                fileDescriptor: dfd,
-                eventMask: [.write],
-                queue: .main
-            )
-            dsrc.setEventHandler { [weak self] in
-                self?.scheduleReload(reopenFile: true)
-            }
-            dsrc.setCancelHandler { close(dfd) }
-            dsrc.resume()
-            self.dirSource = dsrc
-        }
+        // We intentionally do NOT also open the parent directory: that triggers
+        // a TCC "App Management" / cross-container consent prompt every time the
+        // file lives somewhere protected (iCloud, ~/Documents, another app's
+        // container, …). Atomic-rename saves are still handled — the file
+        // source above fires .delete/.rename when the inode is replaced and
+        // scheduleReload(reopenFile: true) re-opens the new inode.
     }
 
     private func scheduleReload(reopenFile: Bool) {

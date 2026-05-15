@@ -1,6 +1,6 @@
 //
 //  Settings+render.swift
-//  QLMarkdown
+//  MarkdownViewer
 //
 //  Created by Sbarex on 06/05/25.
 //

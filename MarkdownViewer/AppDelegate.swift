@@ -1,6 +1,6 @@
 //
 //  AppDelegate.swift
-//  QLMarkdown
+//  MarkdownViewer
 //
 //  Standalone Markdown viewer with live file reload.
 //
@@ -32,6 +32,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func openFile(_ url: URL) {
         showMainWindow()
         _ = viewController?.openMarkdown(file: url)
+    }
+
+    static var defaultWindowTitle: String {
+        let info = Bundle.main.infoDictionary
+        let version = info?["CFBundleShortVersionString"] as? String ?? ""
+        return version.isEmpty ? "Markdown Viewer" : "Markdown Viewer \(version)"
     }
 
     func applicationWillFinishLaunching(_ notification: Notification) {
@@ -122,7 +128,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             // Use contentView (not contentViewController) so AppKit doesn't try
             // to re-size the window from a view controller's preferredContentSize.
             window.contentView = v
-            window.title = "Markdown Viewer"
+            window.title = AppDelegate.defaultWindowTitle
             window.tabbingMode = .disallowed
             window.center()
             self.viewController = vc
