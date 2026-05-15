@@ -54,7 +54,7 @@
 		<true/>
 	</dict>
 	<key>NSHumanReadableCopyright</key>
-	<string>Developed by SBAREX 2020 - 2026.</string>
+	<string>Copyright © 2026 Nelson Melo. GPL-3.0 licensed. Based on QLMarkdown by sbarex.</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 	<key>NSSupportsAutomaticTermination</key>

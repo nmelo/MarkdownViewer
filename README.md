@@ -26,4 +26,6 @@ The product lands in `~/Library/Developer/Xcode/DerivedData/MarkdownViewer-*/Bui
 
 ## License
 
-Inherits the original project's MIT license. See `LICENSE.txt`.
+GPL-3.0 — see [`LICENSE`](./LICENSE).
+
+The Swift code in this repository started as a derivative of [sbarex/QLMarkdown](https://github.com/sbarex/QLMarkdown) (MIT), which the MIT license allows us to relicense. The combined work is GPL-3.0 because the syntax-highlighting library it links against ([saalen/highlight](https://gitlab.com/saalen/highlight)) is GPL-3.0.
