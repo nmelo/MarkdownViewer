@@ -435,7 +435,7 @@ extension Settings {
             cmark_node_free(doc)
         }
         
-        let about = self.about ? "<div style='font-size: 72%; margin-top: 1.5em; padding-top: .5em; -webkit-user-select: none;'><hr style='height: 0; border: none; border-top: 1px solid rgba(0,0,0,.5); box-shadow: 0 1px 1px rgba(255, 255, 255, .5)'/>\(Self.aboutInfo)</div>\n" : ""
+        let about = ""
         
         let html_debug = self.renderDebugInfo(forAppearance: appearance, baseDir: baseDir)
         // Render

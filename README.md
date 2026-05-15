@@ -6,11 +6,30 @@ A standalone macOS markdown viewer with live file reload. Opens a `.md` file, re
 
 Fork of [sbarex/QLMarkdown](https://github.com/sbarex/QLMarkdown), trimmed down from a Quick Look extension into a plain app.
 
-## Build
+## Download
 
-Requires Xcode 26 and `cmake` (for the bundled cmark-gfm build).
+Grab the latest signed and notarized build from the [Releases page](https://github.com/nmelo/MarkdownViewer/releases/latest):
 
 ```sh
+unzip MarkdownViewer-vX.Y.Z.zip
+mv MarkdownViewer.app /Applications/
+```
+
+That's it — no Gatekeeper warning, no `xattr` ritual. Double-click any `.md` file in Finder, or `open -a MarkdownViewer file.md` from the terminal.
+
+## Open a file
+
+- Finder: double-click or right-click → Open With
+- Terminal: `open -a MarkdownViewer file.md`
+- Drag-and-drop onto the window
+
+## Build from source
+
+Required if you're hacking on it. Needs Xcode 26 and `cmake` for the bundled cmark-gfm. Clone with `--recurse-submodules` so the renderer dependencies come along.
+
+```sh
+git clone --recurse-submodules https://github.com/nmelo/MarkdownViewer
+cd MarkdownViewer
 xcodebuild -project MarkdownViewer.xcodeproj \
   -scheme MarkdownViewer \
   -configuration Release \
@@ -19,12 +38,6 @@ xcodebuild -project MarkdownViewer.xcodeproj \
 ```
 
 The product lands in `~/Library/Developer/Xcode/DerivedData/MarkdownViewer-*/Build/Products/Release/MarkdownViewer.app`. Drop it in `/Applications`, then `codesign --force --sign - --deep` it for local launch.
-
-## Open a file
-
-- Finder: double-click or right-click → Open With
-- Terminal: `open -a MarkdownViewer file.md`
-- Drag-and-drop onto the window
 
 ## License
 
