@@ -6,22 +6,6 @@
 //
 
 import Cocoa
-import os.log
-
-private let mvLog = OSLog(subsystem: "org.anarion.MarkdownViewer", category: "viewer")
-
-private func probe(_ msg: String, file: String = #file, line: Int = #line) {
-    NSLog("MV-PROBE \(file):\(line) — \(msg)")
-    let path = "/tmp/mv-probe.log"
-    let line = "\(Date()) \(file):\(line) — \(msg)\n"
-    if let h = try? FileHandle(forWritingTo: URL(fileURLWithPath: path)) {
-        h.seekToEndOfFile()
-        h.write(line.data(using: .utf8)!)
-        try? h.close()
-    } else {
-        try? line.write(to: URL(fileURLWithPath: path), atomically: true, encoding: .utf8)
-    }
-}
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     private var mainWindowController: NSWindowController?
@@ -34,9 +18,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     override init() {
         super.init()
-        probe("AppDelegate.init enter")
         self.documentController = ViewerDocumentController()
-        probe("AppDelegate.init exit")
     }
 
     func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {
@@ -44,7 +26,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationShouldOpenUntitledFile(_ sender: NSApplication) -> Bool {
-        probe("applicationShouldOpenUntitledFile -> false")
         return false
     }
 
@@ -54,7 +35,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationWillFinishLaunching(_ notification: Notification) {
-        probe("applicationWillFinishLaunching")
         // Install our Apple Event handler BEFORE NSDocumentController installs its
         // default one. Otherwise Finder "Open With" → 'odoc' events hit
         // NSDocumentController's handler, which rejects unknown types with
@@ -88,9 +68,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        probe("applicationDidFinishLaunching enter")
         Settings.shared.installDependencies()
-        probe("after installDependencies")
 
         if let path = Settings.mermaidCacheFileUrl, !FileManager.default.fileExists(atPath: path.path) {
             Settings.shared.updateMemaidCache { _ in }
@@ -99,11 +77,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             Settings.shared.updateMathJaxUCache { _ in }
         }
 
-        probe("before buildMenu")
         buildMenu()
-        probe("after buildMenu, before showMainWindow")
         showMainWindow()
-        probe("after showMainWindow")
     }
 
     func application(_ sender: NSApplication, openFile filename: String) -> Bool {
@@ -132,7 +107,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - Window
 
     private func showMainWindow() {
-        probe("showMainWindow called, mainWindowController==nil: \(mainWindowController == nil)")
         if mainWindowController == nil {
             let initialSize = NSSize(width: 900, height: 700)
             let vc = ViewController()
@@ -151,13 +125,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             window.title = "Markdown Viewer"
             window.tabbingMode = .disallowed
             window.center()
-            probe("Window created frame=\(window.frame) contentRect=\(window.contentRect(forFrameRect: window.frame))")
             self.viewController = vc
             self.mainWindowController = NSWindowController(window: window)
         }
         mainWindowController?.window?.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
-        probe("Window now visible=\(mainWindowController?.window?.isVisible ?? false) frame=\(mainWindowController?.window?.frame ?? .zero)")
     }
 
     // MARK: - Menu
