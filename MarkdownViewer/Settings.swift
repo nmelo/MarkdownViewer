@@ -317,10 +317,16 @@ class Settings: Codable {
     }
     
     /// URL of the Application Support folder.
+    /// Upstream used `containerURL(forSecurityApplicationGroupIdentifier:)`
+    /// because the Quick Look extension and the host app shared state via an
+    /// app group. We don't have an extension and we don't ship the group
+    /// entitlement; calling that API on macOS triggers the App Management TCC
+    /// consent ("would like to access data from other apps") on every open.
+    /// Use the standard per-user Application Support directory instead.
     class var applicationSupportUrl: URL? {
-        return FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: Self.appGroup)?
-            .appendingPathComponent("Library")
-            .appendingPathComponent("Application Support")
+        return FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
+            .first?
+            .appendingPathComponent("MarkdownViewer")
     }
     
     /**
