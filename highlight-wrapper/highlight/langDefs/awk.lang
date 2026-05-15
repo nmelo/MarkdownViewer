@@ -1,0 +1,51 @@
+
+Description="(G)AWK"
+
+-- Syntax file created by Andreas Schoenberg
+
+
+Categories = {"source", "script"}
+
+Keywords={
+  { Id=1,
+    List={
+      "BEGIN", "END", "break", "close", "continue", "delete", "do", "else",
+      "exit", "for", "getline", "gsub", "if", "in", "index", "length", "match", "next", "nextfile",
+      "print", "printf", "return", "split", "sprintf", "sub", "substr", "system",
+      "tolower", "toupper", "while"
+    },
+  },
+  { Id=2,
+    List={
+      "ARGC", "ARGIND", "ARGV", "BINMODE", "CONVFMT", "ENVIRON", "ERRNO",
+      "FIELDWIDTHS", "FILENAME", "FNR", "FS", "IGNORECASE", "LINT", "NF", "NR", "OFMT", "OFS",
+      "ORS", "PROCINFO", "RLENGTH", "ROUNDMODE", "RS", "RSTART", "RT", "SUBSEP", "TEXTDOMAIN"
+    },
+  },
+  { Id=3,
+    List={
+      "function", "asort", "asorti", "and", "or", "xor", "compl", "lshift", "rshift",
+      "bindtextdomain", "dcgettext", "dcngettext", "gensub", "mktime", "strftime",
+      "systime", "patsplit", "strtonum", "typeof"
+    },
+  },
+  { Id=4,
+    Regex=[[ \$[\w]+ ]],
+  }
+}
+
+Strings={
+  Delimiter=[["|']],
+  Escape=[[ [\\%]\d{3}|[\\%]x\d{2}|[\\%][ntvbrfa\\\?'"%] ]],
+  Interpolation = [[ %\w ]],
+}
+
+IgnoreCase=false
+
+Comments={
+  { Block=false,
+    Delimiter= { [[#]] },
+  },
+}
+
+Operators=[[\(|\)|\[|\]|\{|\}|\,|\;|\:|\&|<|>|\!\=|\/|\*|\||\+|\-]]

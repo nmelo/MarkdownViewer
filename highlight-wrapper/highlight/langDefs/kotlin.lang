@@ -1,0 +1,48 @@
+
+Description="Kotlin"
+
+Categories = {"source"}
+
+Keywords={
+  { Id=1,
+    List={
+      "abstract", "actual", "annotation", "as", "break", "by", "catch", "class",
+      "companion", "const", "constructor", "continue", "crossinline", "data",
+      "delegate", "do", "dynamic", "else", "enum", "expect", "external", "false",
+      "final", "finally", "for", "fun", "get", "if", "import", "in", "infix",
+      "init", "inline", "inner", "interface", "internal", "is", "lateinit",
+      "noinline", "null", "object", "open", "operator", "out", "override",
+      "package", "private", "protected", "public", "reified", "return", "sealed",
+      "set", "super", "suspend", "tailrec", "this", "throw", "true", "try",
+      "typealias", "typeof", "val", "var", "vararg", "when", "where", "while"}
+  },
+  { Id=2,
+    List={
+      "Any","Unit", "String", "Array", "Int", "Boolean", "Char", "Long", "Double",
+      "Float", "Short", "Byte" }
+  },
+  { Id=3,
+    Regex=[[@\w+]]
+  },
+  { Id=4,
+    Regex=[[(\w+)\s*\(]]
+  }
+}
+
+Strings = {
+  Delimiter=[['|`|"]],
+    Interpolation=[[ [%$]\w+|\$\{[^}]+\} ]],
+}
+
+Comments = {
+  { Block=true,
+    Nested=false,
+    Delimiter = { [[\/\*]], [[\*\/]] }
+  },
+  {
+    Block=false,
+    Delimiter = { [[//]] }
+  }
+}
+
+Operators=[[\(|\)|\[|\]|\{|\}|\,|\;|\.|\:|\&|<|>|\!|=|\/|\*|\%|\+|\-|\~|\||\^]]

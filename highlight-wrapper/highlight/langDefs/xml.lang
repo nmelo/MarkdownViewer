@@ -1,0 +1,48 @@
+
+Description="XML"
+
+Categories = {"config", "protocol"}
+
+
+Keywords={
+  { Id=1,
+    Regex=[[<[!?]?(?!\-\-)\/?[\w\:\-]+>?|[/?]?>]],
+    Group=0,
+  },
+  { Id=2,
+    Regex=[[([-\w]+)="]],
+  },
+  { Id=4,
+    Regex=[[\&\#?\w+;]],
+  },
+}
+
+Strings={
+  Delimiter=[["]],
+  Escape=[[\A(?!x)x]]
+  -- see http://stackoverflow.com/questions/1723182/a-regex-that-will-never-be-matched-by-anything
+}
+
+Comments={
+  { Block=true,
+    Nested=false,
+    Delimiter= { [[<!\-\-]],[[\-\->]] }
+  }
+}
+
+
+IgnoreCase=true
+
+-- resolve issue with quotes in text elements
+function OnStateChange(oldState, newState, token, kwgroup)
+
+  if kwgroup==1 then
+    allowQuoteAfterDefault = token:sub(-1)~= ">"
+  end
+
+  if not allowQuoteAfterDefault and oldState==HL_STANDARD and newState==HL_STRING then
+    return HL_STANDARD
+  end
+
+  return newState
+end

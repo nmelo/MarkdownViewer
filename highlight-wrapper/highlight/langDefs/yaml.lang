@@ -1,0 +1,32 @@
+Description="Generic YAML"
+
+Categories = {"markup"}
+
+Digits=[[ (?:0x)[0-9a-fA-F]+|(?:0b)[01]+|(?:0o)[0-8]+|(?<![\w.])\d*[\.]?\d+(?:[eE][\-\+]\d+)?[lLuU]* ]]
+
+Keywords={
+  {
+    Id=2,
+    Regex=[[ https?\:\/\/\S+?|ftp\:\/\/\S+?|mailto\:\S+?|\d+\.\d+\.\d+\.\d+/\d+ ]],
+  },
+  {
+    Id=1,
+    Regex=[[(?<!\/)([\w\-\.]+?\:)]],
+  },
+}
+
+Strings={
+  Delimiter=[["|']],
+  --Interpolation=[[ \{\{(.*?)\}\} ]],
+}
+
+Comments={
+  {
+    Block=false,
+    Delimiter= { [[#]] },
+  },
+}
+
+Operators=[[\(|\)|\[|\]|<|>|\=|\-|\,|\&|\!|\*|\%|\+|\%|\||{|}]]
+
+IgnoreCase=true

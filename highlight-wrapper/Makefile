@@ -1,0 +1,258 @@
+.DEFAULT_GOAL := all
+
+SPACE     := $(null) $(null)
+CURRENT_DIR := $(subst $(SPACE),"\\ ",$(CURDIR))
+
+LUA_DIR=lua-5.5.0
+HIGHLIGHT_DIR=highlight
+
+ifeq ($(BUILT_PRODUCTS_DIR),)
+	BUILD_DIR=${CURRENT_DIR}/build
+else
+	BUILD_DIR=${BUILT_PRODUCTS_DIR}
+endif
+
+ifeq ($(ONLY_ACTIVE_ARCH),)
+	ONLY_ACTIVE_ARCH=NO
+endif
+
+CXX=clang++
+CFLAGS=-Wall -std=c++17 -D_FILE_OFFSET_BITS=64 \
+       -I ${CURRENT_DIR}/${HIGHLIGHT_DIR}/src/include \
+       -I ${CURRENT_DIR}/${LUA_DIR}/src \
+       -I ${CURRENT_DIR} \
+       -I ${BUILD_DIR}
+LDFLAGS=-L${BUILD_DIR}
+CXXFLAGS=-std=c++17 -stdlib=libc++
+
+CFLAGS_x86_64=-target x86_64-apple-macos10.15 -mmacosx-version-min=10.15
+CFLAGS_arm64=-target arm64-apple-macos11 -mmacosx-version-min=11
+
+LDFLAGS_x86_64=-target x86_64-apple-macos10.15 -mmacosx-version-min=10.15
+LDFLAGS_arm64=-target arm64-apple-macos11 -mmacosx-version-min=11
+
+ifeq ($(CONFIGURATION),Debug)
+	CFLAGS_x86_64+= -g
+	CFLAGS_arm64+= -g
+else
+	CFLAGS_x86_64+= -DNDEBUG
+	CFLAGS_arm64+= -DNDEBUG
+endif
+
+bold := $(shell tput bold 2> /dev/null)
+normal := $(shell tput sgr0 2> /dev/null)
+
+ifndef NATIVE_ARCH
+	NATIVE_ARCH := $(shell uname -m)
+	# $(error NATIVE_ARCH is not set)
+endif
+
+VALID_ARCHS = x86_64 arm64
+
+libraries_shared =
+libraries_static =
+lua_libraries =
+
+ifeq ($(NATIVE_ARCH),x86_64)
+	lua_libraries    += ${BUILD_DIR}/liblua-x86_64.a
+	highlight_libraries = ${BUILD_DIR}/libhighlight-x86_64.a
+	libraries_shared += ${BUILD_DIR}/libwrapper_highlight-x86_64.dylib
+	libraries_static += ${BUILD_DIR}/libwrapper_highlight-x86_64.a
+else
+	lua_libraries    += ${BUILD_DIR}/liblua-arm64.a
+	highlight_libraries = ${BUILD_DIR}/libhighlight-arm64.a
+	libraries_shared += ${BUILD_DIR}/libwrapper_highlight-arm64.dylib
+	libraries_static += ${BUILD_DIR}/libwrapper_highlight-arm64.a
+endif
+
+ifeq ($(ONLY_ACTIVE_ARCH),NO)
+ifeq ($(NATIVE_ARCH),x86_64)
+		# build arm code
+		lua_libraries    += ${BUILD_DIR}/liblua-arm64.a
+		highlight_libraries += ${BUILD_DIR}/libhighlight-arm64.a
+		libraries_shared += ${BUILD_DIR}/libwrapper_highlight-arm64.dylib
+		libraries_static += ${BUILD_DIR}/libwrapper_highlight-arm64.a
+else
+		# build intel code
+		lua_libraries    += ${BUILD_DIR}/liblua-x86_64.a
+		highlight_libraries += ${BUILD_DIR}/libhighlight-x86_64.a
+		libraries_shared += ${BUILD_DIR}/libwrapper_highlight-x86_64.dylib
+		libraries_static += ${BUILD_DIR}/libwrapper_highlight-x86_64.a
+endif
+endif
+
+check_arch:
+# 	@echo NATIVE_ARCH IS $(NATIVE_ARCH)
+ifeq ($(filter $(NATIVE_ARCH),$(VALID_ARCHS)),)
+		$(error "Current arch ${NATIVE_ARCH} is not supported! Valid archs are: ${VALID_ARCHS}.")
+endif
+ifeq ($(ONLY_ACTIVE_ARCH),NO)
+		@echo "${bold}Building universal binary${normal}"
+else
+		@echo "${bold}Building $(NATIVE_ARCH) architecture${normal}"
+endif
+	@echo ""
+
+build_dir:
+	$(shell mkdir build 2> /dev/null)
+
+# ################################
+# LUA library
+# ################################
+
+lua_arm: ${BUILD_DIR}/liblua-arm64.a
+lua_intel: ${BUILD_DIR}/liblua-x86_64.a
+lua: ${BUILD_DIR}/liblua.a
+
+clean_lua:
+	@echo "${bold}Cleaning lua…${normal}"
+	${MAKE} -C ${LUA_DIR} clean
+	@echo ""
+
+${BUILD_DIR}/liblua-arm64.a:
+	@echo "${bold}Building lua for arm64 platform…${normal}"
+	${MAKE} -C ${LUA_DIR} clean
+	${MAKE} CC="gcc -std=gnu99 -target arm64-apple-macos11" MYCFLAGS="$(CFLAGS_arm64)" MYLDFLAGS="$(LDFLAGS_arm64)" -C ${LUA_DIR}
+	mv ${LUA_DIR}/src/liblua.a ${BUILD_DIR}/liblua-arm64.a
+	@echo ""
+
+${BUILD_DIR}/liblua-x86_64.a:
+	@echo "${bold}Building lua for x86_64 platform…${normal}"
+	${MAKE} -C ${LUA_DIR} clean
+	${MAKE} MYCFLAGS="$(CFLAGS_x86_64)" MYLDFLAGS="$(LDFLAGS_x86_64)" -C ${LUA_DIR}
+	mv ${LUA_DIR}/src/liblua.a ${BUILD_DIR}/liblua-x86_64.a
+	@echo ""
+
+${BUILD_DIR}/liblua.a: ${lua_libraries}
+ifeq ($(ONLY_ACTIVE_ARCH),NO)
+		@echo "${bold}Creating lua universal library...${normal}"
+		lipo -create -output ${BUILD_DIR}/liblua.a ${BUILD_DIR}/liblua-x86_64.a ${BUILD_DIR}/liblua-arm64.a
+else
+		@echo "${bold}Creating lua library for ${NATIVE_ARCH}...${normal}"
+		@rm -f ${BUILD_DIR}/liblua.a > /dev/null
+		ln ${BUILD_DIR}/liblua-${NATIVE_ARCH}.a ${BUILD_DIR}/liblua.a
+endif
+	@echo ""
+
+
+
+# ################################
+# Highlight library
+# ################################
+
+highlight_arm: lua ${BUILD_DIR}/libhighlight-arm64.a
+highlight_intel: lua ${BUILD_DIR}/libhighlight-x86_64.a
+highlight: ${BUILD_DIR}/libhighlight.a
+
+clean_highlight:
+	@echo "${bold}Cleaning highlight…${normal}"
+	@cp highlight_custom/makefile2.makefile highlight/makefile2.makefile
+	@cp highlight_custom/src/makefile2.makefile highlight/src/makefile2.makefile
+	@${MAKE} -C ${HIGHLIGHT_DIR} -f makefile2.makefile clean
+	@rm highlight/makefile2.makefile
+	@rm highlight/src/makefile2.makefile
+	@echo ""
+
+${BUILD_DIR}/libhighlight-x86_64.a:
+	@echo "${bold}Building highlight for x86_64 platform...${normal}"
+	@cp highlight_custom/makefile2.makefile highlight/makefile2.makefile
+	@cp highlight_custom/src/makefile2.makefile highlight/src/makefile2.makefile
+	@${MAKE} -C ${HIGHLIGHT_DIR} -f makefile2.makefile clean
+	${MAKE} LUA_CFLAGS="-I$(CURRENT_DIR)/$(LUA_DIR)/src" LUA_LIBS="-L$(CURRENT_DIR)/build -llua -lm" MYCFLAGS="${CFLAGS_x86_64} -I$(CURRENT_DIR)/" -C ${HIGHLIGHT_DIR} -f makefile2.makefile lib-static
+	mv ${HIGHLIGHT_DIR}/src/lib-static ${BUILD_DIR}/libhighlight-x86_64.a
+	@rm highlight/makefile2.makefile
+	@rm highlight/src/makefile2.makefile
+	@echo ""
+
+${BUILD_DIR}/libhighlight-arm64.a:
+	@echo "${bold}Building highlight for arm64 platform...${normal}"
+	@cp highlight_custom/makefile2.makefile highlight/makefile2.makefile
+	@cp highlight_custom/src/makefile2.makefile highlight/src/makefile2.makefile
+	@${MAKE} -C ${HIGHLIGHT_DIR} -f makefile2.makefile clean
+	${MAKE} LUA_CFLAGS="-I$(CURRENT_DIR)/$(LUA_DIR)/src" LUA_LIBS="-L$(CURRENT_DIR)/build -llua -lm" MYCFLAGS="${CFLAGS_arm64} -I$(CURRENT_DIR)/" MYLDFLAGS="$(LDFLAGS_arm64)" -C ${HIGHLIGHT_DIR} -f makefile2.makefile lib-static
+	mv ${HIGHLIGHT_DIR}/src/lib-static ${BUILD_DIR}/libhighlight-arm64.a
+	@rm highlight/makefile2.makefile
+	@rm highlight/src/makefile2.makefile
+	@echo ""
+
+${BUILD_DIR}/libhighlight.a: ${highlight_libraries}
+ifeq ($(ONLY_ACTIVE_ARCH),NO)
+		@echo "${bold}Creating highlight universal library...${normal}"
+		lipo -create -output ${BUILD_DIR}/libhighlight.a ${BUILD_DIR}/libhighlight-x86_64.a ${BUILD_DIR}/libhighlight-arm64.a
+else
+		@echo "${bold}Creating highlight library for ${NATIVE_ARCH}...${normal}"
+		@rm -f ${BUILD_DIR}/libhighlight.a > /dev/null
+		ln ${BUILD_DIR}/libhighlight-${NATIVE_ARCH}.a ${BUILD_DIR}/libhighlight.a
+endif
+	@echo ""
+
+# ################################
+# Highlight wrapper
+# ################################
+
+highlight-wrapper_intel: ${BUILD_DIR}/libwrapper_highlight-x86_64.dylib
+highlight-wrapper_arm: ${BUILD_DIR}/libwrapper_highlight-arm64.dylib
+highlight-wrapper: ${BUILD_DIR}/libwrapper_highlight.dylib
+
+clean_highlight-wrapper:
+	@echo "${bold}Cleaning highlight wrapper…${normal}"
+	@rm -f ${BUILD_DIR}/wrapper_highlight-x86_64.o
+	@rm -f ${BUILD_DIR}/wrapper_highlight-arm64.o
+	@echo ""
+
+${BUILD_DIR}/libwrapper_highlight-x86_64.dylib: ${BUILD_DIR}/liblua.a ${BUILD_DIR}/libhighlight.a wrapper_highlight.cpp
+	@echo "${bold}Compiling highlight wrapper for x86_64 platform...${normal}"
+	@echo "current dir: ${CURRENT_DIR}"
+	MACOSX_DEPLOYMENT_TARGET=10.15 ${CXX} ${CFLAGS} ${CFLAGS_x86_64} ${LDFLAGS} ${LDFLAGS_x86_64} \
+-static \
+-c wrapper_highlight.cpp -o ${BUILD_DIR}/wrapper_highlight-x86_64.o
+	@echo ""
+
+	@echo "${bold}Creating highlight wrapper shared library for x86_64 platform...${normal}"
+	${CXX} ${CFLAGS} ${CFLAGS_x86_64} ${LDFLAGS} ${LDFLAGS_x86_64} \
+-ldl -lhighlight -llua \
+-dynamiclib \
+-install_name @rpath/libwrapper_highlight.dylib \
+-o ${BUILD_DIR}/libwrapper_highlight-x86_64.dylib ${BUILD_DIR}/wrapper_highlight-x86_64.o
+	@echo ""
+
+${BUILD_DIR}/libwrapper_highlight-arm64.dylib: ${BUILD_DIR}/liblua.a ${BUILD_DIR}/libhighlight.a wrapper_highlight.cpp
+	@echo "${bold}Compiling highlight wrapper for arm64 platform...${normal}"
+	MACOSX_DEPLOYMENT_TARGET=11 ${CXX} ${CFLAGS} ${CFLAGS_arm64} \
+-static \
+-c wrapper_highlight.cpp -o ${BUILD_DIR}/wrapper_highlight-arm64.o
+	@echo ""
+	@echo "${bold}Creating highlight wrapper shared library for arm64 platform...${normal}"
+	${CXX} ${CFLAGS} ${CFLAGS_arm64} ${LDFLAGS} ${LDFLAGS_arm64} \
+-ldl -lhighlight -llua -framework CoreFoundation \
+-dynamiclib \
+-install_name @rpath/libwrapper_highlight.dylib \
+-o ${BUILD_DIR}/libwrapper_highlight-arm64.dylib ${BUILD_DIR}/wrapper_highlight-arm64.o
+	@echo ""
+
+${BUILD_DIR}/libwrapper_highlight.dylib: ${libraries_shared} wrapper_highlight.cpp
+ifeq ($(ONLY_ACTIVE_ARCH),NO)
+		@echo "${bold}Creating highlight wrapper universal shared library...${normal}"
+		lipo -create -output ${BUILD_DIR}/libwrapper_highlight.dylib ${BUILD_DIR}/libwrapper_highlight-x86_64.dylib ${BUILD_DIR}/libwrapper_highlight-arm64.dylib
+		@echo ""
+else
+		@echo "${bold}Creating highlight wrapper library for ${NATIVE_ARCH}...${normal}"
+		cp ${BUILD_DIR}/libwrapper_highlight-${NATIVE_ARCH}.dylib ${BUILD_DIR}/libwrapper_highlight.dylib
+endif
+
+all: check_arch build_dir lua highlight highlight-wrapper
+install: check_arch build_dir lua highlight highlight-wrapper
+
+clean_intermediate: clean_lua clean_highlight clean_highlight-wrapper
+
+clean: clean_intermediate
+	@rm ${BUILD_DIR}/libwrapper_highlight.dylib 2> /dev/null
+	@rm ${BUILD_DIR}/libwrapper_highlight-x86_64.dylib 2> /dev/null
+	@rm ${BUILD_DIR}/libwrapper_highlight-arm64.dylib 2> /dev/null
+	@rm ${BUILD_DIR}/libhighlight.a 2> /dev/null
+	@rm ${BUILD_DIR}/libhighlight-x86_64.a 2> /dev/null
+	@rm ${BUILD_DIR}/libhighlight-arm64.a 2> /dev/null
+	@rm ${BUILD_DIR}/liblua.a 2> /dev/null
+	@rm ${BUILD_DIR}/liblua-x86_64.a 2> /dev/null
+	@rm ${BUILD_DIR}/liblua-arm64.a 2> /dev/null
+	

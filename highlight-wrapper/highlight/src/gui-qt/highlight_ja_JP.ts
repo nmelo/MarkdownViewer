@@ -1,0 +1,1214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.1" language="ja_JP" sourcelanguage="en_US">
+<context>
+    <name>MainWindow</name>
+    <message>
+        <source>dark</source>
+        <translation>ダーク</translation>
+    </message>
+    <message>
+        <source>Preview of &quot;%1&quot; not possible.</source>
+        <translation>&quot;%1&quot;のプレビューが出来ません。</translation>
+    </message>
+    <message>
+        <source>light</source>
+        <translation>ライト</translation>
+    </message>
+    <message>
+        <source>Language definition error</source>
+        <translation>言語定義エラー</translation>
+    </message>
+    <message>
+        <source>Invalid regular expression in %1:
+%2</source>
+        <translation>%1 中の無効な正規表現：
+%2</translation>
+    </message>
+    <message>
+        <source>Unknown syntax</source>
+        <translation>不明な構文</translation>
+    </message>
+    <message>
+        <source>Some plug-in effects may not be visible in the preview.</source>
+        <translation>プレビューではプラグインの効果が確認できないものがあります。</translation>
+    </message>
+    <message>
+        <source>Output error</source>
+        <translation>出力エラー</translation>
+    </message>
+    <message>
+        <source>NTFS Short Names</source>
+        <translation>NTFS短縮名</translation>
+    </message>
+    <message>
+        <source>Lua error</source>
+        <translation>Luaのエラー</translation>
+    </message>
+    <message>
+        <source>Choose a plug-in input file</source>
+        <translation>プラグインの入力ファイルの選択</translation>
+    </message>
+    <message>
+        <source>B16 dark</source>
+        <translation>B16 ダーク</translation>
+    </message>
+    <message>
+        <source>Could not read a colour theme: </source>
+        <translation>カラーテーマが読み込めません： </translation>
+    </message>
+    <message>
+        <source>Language server initialization successful</source>
+        <translation>Language Serverの初期化に成功</translation>
+    </message>
+    <message>
+        <source>Select one or more plug-ins</source>
+        <translation>1つ以上のプラグインを選択</translation>
+    </message>
+    <message>
+        <source>About providing translations</source>
+        <translation>翻訳の提供について</translation>
+    </message>
+    <message>
+        <source>Language server initialization failed</source>
+        <translation>Language Serverの初期化に失敗</translation>
+    </message>
+    <message>
+        <source>(user script)</source>
+        <translation>（ユーザースクリプト）</translation>
+    </message>
+    <message>
+        <source>Initialization error</source>
+        <translation>初期化エラー</translation>
+    </message>
+    <message>
+        <source>%1 options</source>
+        <translation>%1 オプション</translation>
+    </message>
+    <message>
+        <source>Always at your service</source>
+        <translation>ご自由にどうぞ</translation>
+    </message>
+    <message>
+        <source>Current theme: %1 %2</source>
+        <translation>現在のテーマ： %1 %2</translation>
+    </message>
+    <message>
+        <source>Conversion of &quot;%1&quot; not possible.</source>
+        <translation>&quot;%1&quot;の変換が出来ません。</translation>
+    </message>
+    <message>
+        <source>Select destination directory</source>
+        <translation>出力ディレクトリの選択</translation>
+    </message>
+    <message>
+        <source>B16 light</source>
+        <translation>B16 ライト</translation>
+    </message>
+    <message>
+        <source>NTFS short names may be disabled on your volumes. Highlight can not read input with multibyte file names if no short name is available. This information will no longer bother you.</source>
+        <translation>NTFSの短縮名がボリュームで無効化されているかもしれません。短縮名が利用できない場合、Hightlightはマルチバイト文字のファイル名の入力を読み込めません。以降はこの情報は今回のみ表示されます。</translation>
+    </message>
+    <message>
+        <source>Contrast: %1 %2</source>
+        <translation>コントラスト： %1 %2</translation>
+    </message>
+    <message>
+        <source>Language server connection failed</source>
+        <translation>Language serverの接続に失敗</translation>
+    </message>
+    <message>
+        <source>Could not find LSP profiles. Check installation.</source>
+        <translation>LSPプロファイルが見つかりません。インストール手順をご確認ください。</translation>
+    </message>
+    <message>
+        <source>clipboard data</source>
+        <translation>クリップボードのデータ</translation>
+    </message>
+    <message>
+        <source>Processing %1 (%2/%3)</source>
+        <translation>処理中 %1 (%2/%3)</translation>
+    </message>
+    <message>
+        <source>Output directory does not exist!</source>
+        <translation>出力ディレクトリが存在しません！</translation>
+    </message>
+    <message>
+        <source>Choose the Language Server executable</source>
+        <translation>Language Serverの実行ファイルの選択</translation>
+    </message>
+    <message>
+        <source>The GUI was developed using the Qt toolkit, and translations may be provided using the tools Qt Linguist and lrelease.
+The highlight.ts file for Linguist resides in the src/gui-qt subdirectory.
+The qm file generated by lrelease has to be saved in gui-files/l10n.
+
+Please send a note to as (at) andre-simon (dot) de if you have issues during translating or if you have finished or updated a translation.</source>
+        <translation>GUIはQtツールキットを使って開発され、翻訳はQt Linguistとlreleaseを使って提供されています。
+Linguist用のhighlight.tsファイルはsrc/gui-qt副ディレクトリ中にあります。
+lreleaseにより生成されるqmファイルはgui-files/l10n中に保存されなければなりません。
+
+翻訳中に問題があったり翻訳を完遂ないし更新したりした場合はas (at) andre-simon (dot) deまでお送りください。</translation>
+    </message>
+    <message>
+        <source>Could not convert %1</source>
+        <translation>%1 を変換できません</translation>
+    </message>
+    <message>
+        <source>Select one or more files to open</source>
+        <translation>1つ以上の開くファイルの選択</translation>
+    </message>
+    <message>
+        <source>Choose a style include file</source>
+        <translation>含めるスタイルのファイルを選択</translation>
+    </message>
+    <message>
+        <source>Select workspace directory</source>
+        <translation>作業ディレクトリの選択</translation>
+    </message>
+    <message>
+        <source>Converted %1 files in %2 ms</source>
+        <translation>%1 ファイルを %2 msで変換完了</translation>
+    </message>
+    <message>
+        <source>Could not convert %1:
+Lua Syntax error: %2</source>
+        <translation>%1 を変換できません：
+Luaの構文エラー： %2</translation>
+    </message>
+    <message>
+        <source>Preview (%1):</source>
+        <translation>プレビュー (%1)：</translation>
+    </message>
+    <message>
+        <source>Could not find syntax definitions. Check installation.</source>
+        <translation>構文定義が見つかりません。
+インストール作業を確認してください。</translation>
+    </message>
+    <message>
+        <source>You must define a style output file!</source>
+        <translation>スタイル出力ファイルを定義しなくてはなりません！</translation>
+    </message>
+    <message>
+        <source>Select one or more syntax or theme scripts</source>
+        <translation>1つ以上の構文またはテーマスクリプトの選択</translation>
+    </message>
+    <message>
+        <source>Current syntax: %1 %2</source>
+        <translation>現在の構文： %1 %2</translation>
+    </message>
+    <message>
+        <source>Please select a Server</source>
+        <translation>サーバを選択してください</translation>
+    </message>
+</context>
+<context>
+    <name>MainWindowClass</name>
+    <message>
+        <source>A3</source>
+        <translation>A3</translation>
+    </message>
+    <message>
+        <source>A4</source>
+        <translation>A4</translation>
+    </message>
+    <message>
+        <source>A5</source>
+        <translation>A5</translation>
+    </message>
+    <message>
+        <source>B4</source>
+        <translation>B4</translation>
+    </message>
+    <message>
+        <source>B5</source>
+        <translation>B5</translation>
+    </message>
+    <message>
+        <source>B6</source>
+        <translation>B6</translation>
+    </message>
+    <message>
+        <source>...</source>
+        <translation>...</translation>
+    </message>
+    <message>
+        <source>LSP</source>
+        <translation>LSP</translation>
+    </message>
+    <message>
+        <source>ODT</source>
+        <translation>ODT</translation>
+    </message>
+    <message>
+        <source>RTF</source>
+        <translation>RTF</translation>
+    </message>
+    <message>
+        <source>SVG</source>
+        <translation>SVG</translation>
+    </message>
+    <message>
+        <source>TeX</source>
+        <translation>TeX</translation>
+    </message>
+    <message>
+        <source>HTML</source>
+        <translation>HTML</translation>
+    </message>
+    <message>
+        <source>Misc</source>
+        <translation>その他</translation>
+    </message>
+    <message>
+        <source>&amp;Exit</source>
+        <translation>終了(&amp;E)</translation>
+    </message>
+    <message>
+        <source>&amp;File</source>
+        <translation>ファイル(&amp;F)</translation>
+    </message>
+    <message>
+        <source>&amp;Help</source>
+        <translation>ヘルプ(&amp;H)</translation>
+    </message>
+    <message>
+        <source>&amp;Load</source>
+        <translation>読込(&amp;L)</translation>
+    </message>
+    <message>
+        <source>&amp;Save</source>
+        <translation>保存(&amp;S)</translation>
+    </message>
+    <message>
+        <source>&amp;Tips</source>
+        <translation>コツ(&amp;T)</translation>
+    </message>
+    <message>
+        <source>Inline CSS</source>
+        <translation>インライン CSS</translation>
+    </message>
+    <message>
+        <source>&amp;Open files</source>
+        <translation>ファイルを開く(&amp;O)</translation>
+    </message>
+    <message>
+        <source>Files</source>
+        <translation>ファイル</translation>
+    </message>
+    <message>
+        <source>Hover</source>
+        <translation>ホバー</translation>
+    </message>
+    <message>
+        <source>LaTeX</source>
+        <translation>LaTeX</translation>
+    </message>
+    <message>
+        <source>Plug-In description</source>
+        <translation>プラグインの説明</translation>
+    </message>
+    <message>
+        <source>UTF-8</source>
+        <translation>UTF-8</translation>
+    </message>
+    <message>
+        <source>XHTML</source>
+        <translation>XHTML</translation>
+    </message>
+    <message>
+        <source>Clipboard</source>
+        <translation>クリップボード</translation>
+    </message>
+    <message>
+        <source>Configure the LSP Client</source>
+        <translation>LSPクライアントの構成</translation>
+    </message>
+    <message>
+        <source>No options defined.</source>
+        <translation>オプションが定義されてません。</translation>
+    </message>
+    <message>
+        <source>Omit line numbers of wrapped lines</source>
+        <translation>折り返された行の行番号を省略</translation>
+    </message>
+    <message>
+        <source>List of input files.</source>
+        <translation>入力ファイルの一覧。</translation>
+    </message>
+    <message>
+        <source>Intelligent wrapping</source>
+        <translation>自動折り返し</translation>
+    </message>
+    <message>
+        <source>ISO-8859-1</source>
+        <translation>ISO-8859-1</translation>
+    </message>
+    <message>
+        <source>ISO-8859-2</source>
+        <translation>ISO-8859-2</translation>
+    </message>
+    <message>
+        <source>ISO-8859-3</source>
+        <translation>ISO-8859-3</translation>
+    </message>
+    <message>
+        <source>ISO-8859-4</source>
+        <translation>ISO-8859-4</translation>
+    </message>
+    <message>
+        <source>ISO-8859-5</source>
+        <translation>ISO-8859-5</translation>
+    </message>
+    <message>
+        <source>ISO-8859-6</source>
+        <translation>ISO-8859-6</translation>
+    </message>
+    <message>
+        <source>ISO-8859-7</source>
+        <translation>ISO-8859-7</translation>
+    </message>
+    <message>
+        <source>ISO-8859-8</source>
+        <translation>ISO-8859-8</translation>
+    </message>
+    <message>
+        <source>ISO-8859-9</source>
+        <translation>ISO-8859-9</translation>
+    </message>
+    <message>
+        <source>Output any plug-in text injections even if document header and footer is omitted.</source>
+        <translation>ヘッダーとフッターを付加しない場合でもプラグインによる情報は出力する.</translation>
+    </message>
+    <message>
+        <source>Select the plug-in input file.</source>
+        <translation>プラグインの入力ファイルを選択。</translation>
+    </message>
+    <message>
+        <source>Adapt output for the Beamer package</source>
+        <translation>Beamerパッケージに出力を適合</translation>
+    </message>
+    <message>
+        <source>Keep Plug-In injections</source>
+        <translation>プラグインによる挿入部分を維持</translation>
+    </message>
+    <message>
+        <source>Generate an index file with hyperlinks to all outputted files.</source>
+        <translation>すべての出力ファイルへハイパーリンクを持つインデックスファイルを生成。</translation>
+    </message>
+    <message>
+        <source>Embed style (CSS)</source>
+        <translation>埋め込みスタイル (CSS)</translation>
+    </message>
+    <message>
+        <source>Copy preview to clipboard (%1)</source>
+        <translation>プレビューをクリップボードにコピー (%1)</translation>
+    </message>
+    <message>
+        <source>Shows description of a selected plug-in script.</source>
+        <translation>選択したプラグインスクリプトの記述を表示。</translation>
+    </message>
+    <message>
+        <source>List of plug-ins. Toggle checkbox to enable the scripts. The preview window may not display all plug-in effects.</source>
+        <translation>プラグインの一覧。チェックボックスを切り替えてスクリプトを有効化。プレビューウィンドウには全てのプラグインの効果が表示されないことがあります。</translation>
+    </message>
+    <message>
+        <source>Add line anchors</source>
+        <translation>行アンカーを付加</translation>
+    </message>
+    <message>
+        <source>Only output the selected lines of the preview.</source>
+        <translation>プレビューの選択した行のみを出力。</translation>
+    </message>
+    <message>
+        <source>Embed style (defs)</source>
+        <translation>埋め込みスタイル (defs)</translation>
+    </message>
+    <message>
+        <source>Run hover requests to add tooltips to your output (HTML only).</source>
+        <translation>出力にツールチップを追加するためのホバー要求の実行（HTML限定）。</translation>
+    </message>
+    <message>
+        <source>Set encoding:</source>
+        <translation>エンコーディングを設定：</translation>
+    </message>
+    <message>
+        <source>Remove the selected scripts.</source>
+        <translation>選択したスクリプトを削除。</translation>
+    </message>
+    <message>
+        <source>Reformat and indent your code.
+This feature is enabled for C, C++, C# and Java code.</source>
+        <translatorcomment>code formatの文脈です。</translatorcomment>
+        <translation>コードの再整形と字下げをします。
+この機能はC、C++、C#、Javaで利用可能です。</translation>
+    </message>
+    <message>
+        <source>Enable line wrapping.</source>
+        <translation>行の折り返しを有効化。</translation>
+    </message>
+    <message>
+        <source>Start the conversion of your input files.</source>
+        <translation>入力ファイルの変換開始。</translation>
+    </message>
+    <message>
+        <source>Choose a plug-in script.</source>
+        <translation>プラグインスクリプトを選択。</translation>
+    </message>
+    <message>
+        <source>The workspace directory.</source>
+        <translation>作業ディレクトリ。</translation>
+    </message>
+    <message>
+        <source>Select the correct syntax of the code snippet.</source>
+        <translation>コード片の正しい構文を選択。</translation>
+    </message>
+    <message>
+        <source>Output selected lines only</source>
+        <translation>選択した行のみを出力</translation>
+    </message>
+    <message>
+        <source>Output progress:</source>
+        <translation>出力進捗：</translation>
+    </message>
+    <message>
+        <source>Pad with zeroes</source>
+        <translation>ゼロ埋め</translation>
+    </message>
+    <message>
+        <source>Paste from clipboard (%1)</source>
+        <translation>クリップボードから貼り付け (%1)</translation>
+    </message>
+    <message>
+        <source>Choose a formatting scheme.</source>
+        <translatorcomment>code formatの文脈です。</translatorcomment>
+        <translation>整形スキームの選択。</translation>
+    </message>
+    <message>
+        <source>Workspace:</source>
+        <translation>ワークスペース：</translation>
+    </message>
+    <message>
+        <source>Add line numbers</source>
+        <translation>行番号を付加</translation>
+    </message>
+    <message>
+        <source>Set line numbering start.</source>
+        <translation>開始行番号を設定。</translation>
+    </message>
+    <message>
+        <source>Select a Language Server profile.</source>
+        <translation>Language Serverのプロファイル選択。</translation>
+    </message>
+    <message>
+        <source>&amp;License</source>
+        <translation>使用許諾(&amp;L)</translation>
+    </message>
+    <message>
+        <source>Color theme:</source>
+        <translation>カラーテーマ：</translation>
+    </message>
+    <message>
+        <source>highlight.sty</source>
+        <translation>highlight.sty</translation>
+    </message>
+    <message>
+        <source>highlight.css</source>
+        <translation>highlight.css</translation>
+    </message>
+    <message>
+        <source>Enter the number of spaces which replace a tab.
+Set the width to 0 to keep tabs.</source>
+        <translation>タブを空白に変換する際の文字数を入力してください。
+0を入力するとタブの置き換えは行いません。</translation>
+    </message>
+    <message>
+        <source>Enclose in pre tags</source>
+        <translation>preタグで囲む</translation>
+    </message>
+    <message>
+        <source>Stylesheet include file:</source>
+        <translation>含めるスタイルシートのファイル：</translation>
+    </message>
+    <message>
+        <source>Copy highlighted code of the selected file into the clipboard.</source>
+        <translation>選択したファイルのハイライトしたコードをクリップボードにコピー。</translation>
+    </message>
+    <message>
+        <source>Replace quotes by dq sequences.</source>
+        <translation>引用符をdqの並びで置換。</translation>
+    </message>
+    <message>
+        <source>ANSI ESC</source>
+        <translation>ANSI ESC</translation>
+    </message>
+    <message>
+        <source>DejaVu Sans Mono</source>
+        <translation type="vanished">DejaVu Sans Mono</translation>
+    </message>
+    <message>
+        <source>Formatting</source>
+        <translatorcomment>装飾の意味を含めた文脈です。</translatorcomment>
+        <translation>書式</translation>
+    </message>
+    <message>
+        <source>Add an anchor to each line.</source>
+        <translation>それぞれの行にアンカーを付加。</translation>
+    </message>
+    <message>
+        <source>Select a colour theme.</source>
+        <translation>カラーテーマの選択。</translation>
+    </message>
+    <message>
+        <source>&amp;Plug-Ins</source>
+        <translation>プラグイン(&amp;P)</translation>
+    </message>
+    <message>
+        <source>Plug-ins</source>
+        <translation>プラグイン</translation>
+    </message>
+    <message>
+        <source>Fill leading space of line numbers with zeroes.</source>
+        <translation>行番号の前を0で埋める。</translation>
+    </message>
+    <message>
+        <source>Test if input data is not binary.
+Removes Unicode BOM mark.</source>
+        <translation>入力データがバイナリでないかを確認する。
+Unicode BOMマークを削除する。</translation>
+    </message>
+    <message>
+        <source>Start an initialization request.</source>
+        <translation>初期化要求の開始。</translation>
+    </message>
+    <message>
+        <source>Add the filename as prefix to the anchors.</source>
+        <translation>アンカーに前置詞としてファイル名を付加。</translation>
+    </message>
+    <message>
+        <source>Choose an output format.</source>
+        <translation>出力形式の選択。</translation>
+    </message>
+    <message>
+        <source>Remove the selected input files.</source>
+        <translation>選択した入力ファイルの削除。</translation>
+    </message>
+    <message>
+        <source>Generate output without version information comment.</source>
+        <translation>バージョン情報コメントなしで出力を生成。</translation>
+    </message>
+    <message>
+        <source>Include the style information in each output file.</source>
+        <translation>それぞれの出力ファイルにおけるスタイル情報を含む。</translation>
+    </message>
+    <message>
+        <source>Remove all scripts.</source>
+        <translation>全てのスクリプトを削除。</translation>
+    </message>
+    <message>
+        <source>Choose a custom syntax or theme script.</source>
+        <translation>独自構文もしくはテーマスクリプトを選択。</translation>
+    </message>
+    <message>
+        <source>Change the keyword case.</source>
+        <translation>キーワードの大文字・小文字の選択。</translation>
+    </message>
+    <message>
+        <source>BBCode</source>
+        <translation>BBCode</translation>
+    </message>
+    <message>
+        <source>Do not add line numbering to lines which were automatically wrapped.</source>
+        <translation>自動で折り返した行に行番号を付加しない。</translation>
+    </message>
+    <message>
+        <source>Name of the referenced style file.</source>
+        <translation>参照したスタイルファイル名。</translation>
+    </message>
+    <message>
+        <source>Stylesheet file:</source>
+        <translation>スタイルシートファイル：</translation>
+    </message>
+    <message>
+        <source>Include file name in anchor</source>
+        <translation>アンカーにファイル名を含める</translation>
+    </message>
+    <message>
+        <source>Output destination:</source>
+        <translation>出力先：</translation>
+    </message>
+    <message>
+        <source>Shows description of a selected script.</source>
+        <translation>選択したスクリプトの説明を表示。</translation>
+    </message>
+    <message>
+        <source>Letter</source>
+        <translation>レター</translation>
+    </message>
+    <message>
+        <source>Select the server executable.</source>
+        <translation>サーバー実行ファイルの選択。</translation>
+    </message>
+    <message>
+        <source>Choose input files</source>
+        <translation>入力ファイルの選択</translation>
+    </message>
+    <message>
+        <source>Add character styles</source>
+        <translation>文字スタイルを付加</translation>
+    </message>
+    <message>
+        <source>Highlighting options</source>
+        <translation>ハイライトのオプション</translation>
+    </message>
+    <message>
+        <source>Browse output directory</source>
+        <translation>出力ディレクトリを閲覧</translation>
+    </message>
+    <message>
+        <source>Select a CSS include file.</source>
+        <translation>CSSの含めるファイルを選択。</translation>
+    </message>
+    <message>
+        <source>Omit version info comment</source>
+        <translation>バージョン情報コメントを省略</translation>
+    </message>
+    <message>
+        <source>Select syntax:</source>
+        <translation>構文を選択：</translation>
+    </message>
+    <message>
+        <source>A&amp;bout translations</source>
+        <translation>翻訳について(&amp;A)</translation>
+    </message>
+    <message>
+        <source>Font na&amp;me:</source>
+        <translation>フォント名(&amp;M)：</translation>
+    </message>
+    <message>
+        <source>Set page color attribute to background color.</source>
+        <translation>ページ色属性を背景色に設定。</translation>
+    </message>
+    <message>
+        <source>Add plug-in to pool</source>
+        <translation>プラグインをプールに追加</translation>
+    </message>
+    <message>
+        <source>&amp;Dock floating panels</source>
+        <translation>ドックの浮動パネル(&amp;D)</translation>
+    </message>
+    <message>
+        <source>Language Server:</source>
+        <translation>Language Server：</translation>
+    </message>
+    <message>
+        <source>Path of the CSS include file.</source>
+        <translation>CSSの含めるファイルのパス。</translation>
+    </message>
+    <message>
+        <source>Page size:</source>
+        <translation>ページの大きさ：</translation>
+    </message>
+    <message>
+        <source>Preview</source>
+        <translation>プレビュー</translation>
+    </message>
+    <message>
+        <source>Select the workspace directory of your project.</source>
+        <translation>プロジェクトのワークスペースディレクトリの選択。</translation>
+    </message>
+    <message>
+        <source>Line numbering options:</source>
+        <translation>行番号オプション：</translation>
+    </message>
+    <message>
+        <source>Keyword case:</source>
+        <translation>キーワードの大文字・小文字：</translation>
+    </message>
+    <message>
+        <source>Print LSP messages to standard error</source>
+        <translation>LSPメッセージを標準出力に表示</translation>
+    </message>
+    <message>
+        <source>Set the output file encoding.</source>
+        <translation>出力ファイルの文字エンコーディングを設定。</translation>
+    </message>
+    <message>
+        <source>Font si&amp;ze:</source>
+        <translation>フォントの大きさ(&amp;Z)：</translation>
+    </message>
+    <message>
+        <source>Tab width:</source>
+        <translation>タブ幅：</translation>
+    </message>
+    <message>
+        <source>Remove all plug-ins.</source>
+        <translation>全てのプラグインを削除。</translation>
+    </message>
+    <message>
+        <source>Select a style include file.</source>
+        <translation>スタイルの含めるファイルを選択。</translation>
+    </message>
+    <message>
+        <source>&amp;Changelog</source>
+        <translation>変更履歴(&amp;C)</translation>
+    </message>
+    <message>
+        <source>Optional plug-in parameter, this may be a path to a plug-in input file</source>
+        <translation>省略可能なプラグインの引数。プラグインの入力ファイルなど</translation>
+    </message>
+    <message>
+        <source>Generate output without document header and footer.</source>
+        <translation>文書のヘッダーとフッターなしで出力を生成。</translation>
+    </message>
+    <message>
+        <source>Select a page size.</source>
+        <translation>ページの大きさを選択。</translation>
+    </message>
+    <message>
+        <source>Semantic Highlighting</source>
+        <translation>意味論的ハイライト</translation>
+    </message>
+    <message>
+        <source>Show syntax errors and messages (depends on output format).</source>
+        <translation>構文エラーとメッセージの表示（出力形式に依存）。</translation>
+    </message>
+    <message>
+        <source>Add Beamer compatibility</source>
+        <translation>Beamer互換性を付加</translation>
+    </message>
+    <message>
+        <source>Paste clipboard content into the preview window.</source>
+        <translation>クリップボードの内容をプレビューウィンドウに貼り付け。</translation>
+    </message>
+    <message>
+        <source>Clear selection</source>
+        <translation>選択したものを消去</translation>
+    </message>
+    <message>
+        <source>Save output in the input file directories.</source>
+        <translation>入力ファイルディレクトリに出力を保存。</translation>
+    </message>
+    <message>
+        <source>Description</source>
+        <translation>説明</translation>
+    </message>
+    <message>
+        <source>Add HTML MIME Type when copying code to the clipboard</source>
+        <translation>クリップボードへコードをコピーする時HTML MIME Typeを付加</translation>
+    </message>
+    <message>
+        <source>Copy highlighted code into the clipboard.</source>
+        <translation>ハイライトしたコードをクリップボードにコピー。</translation>
+    </message>
+    <message>
+        <source>Select or define the encoding.
+The result has to match the input file encoding.</source>
+        <translation>エンコーディングを選択または定義。
+結果は入力ファイルと一致していなければなりません。</translation>
+    </message>
+    <message>
+        <source>Scripts</source>
+        <translation>スクリプト</translation>
+    </message>
+    <message>
+        <source>Output as ordered list</source>
+        <translation>整列された一覧として出力</translation>
+    </message>
+    <message>
+        <source>Add character stylesheets with formatting information.
+You can select the stylesheets in your word processor to reformat additional text.</source>
+        <translatorcomment>恐らく装飾を含めた広い意味での文脈です。</translatorcomment>
+        <translation>書式情報と共に文字のスタイルシートを付加。
+ワードプロセッサでスタイルシートを選択すると、追加のテキストを再整形できます。</translation>
+    </message>
+    <message>
+        <source>Validate input data</source>
+        <translation>入力データの正当性チェック</translation>
+    </message>
+    <message>
+        <source>Write to source directories</source>
+        <translation>ソースディレクトリに書き込む</translation>
+    </message>
+    <message>
+        <source>Remove the selected plug-ins.</source>
+        <translation>選択したプラグインを削除。</translation>
+    </message>
+    <message>
+        <source>Adapt output for the Babel package</source>
+        <translation>Babelパッケージに出力を適合</translation>
+    </message>
+    <message>
+        <source>Truecolor ESC</source>
+        <translation>Truecolor ESC</translation>
+    </message>
+    <message>
+        <source>Set page color</source>
+        <translation>ページ色を設定</translation>
+    </message>
+    <message>
+        <source>Escape quotes</source>
+        <translation>引用符をエスケープ</translation>
+    </message>
+    <message>
+        <source>Generate index file</source>
+        <translation>インデックスファイルを生成</translation>
+    </message>
+    <message>
+        <source>Select the output directory.</source>
+        <translation>出力ディレクトリの選択。</translation>
+    </message>
+    <message>
+        <source>Output the lines within an ordered list.</source>
+        <translation>順序付きリスト中の行を出力。</translation>
+    </message>
+    <message>
+        <source>&amp;About Highlight</source>
+        <translation>Highlightについて(&amp;A)</translation>
+    </message>
+    <message>
+        <source>Path of the style include file.</source>
+        <translation>含めるスタイルのファイルパス。</translation>
+    </message>
+    <message>
+        <source>Line wrapping</source>
+        <translation>行の折り返し</translation>
+    </message>
+    <message>
+        <source>Clear all</source>
+        <translation>全消去</translation>
+    </message>
+    <message>
+        <source>&amp;Readme</source>
+        <translation>お読みください(&amp;R)</translation>
+    </message>
+    <message>
+        <source>Show Syntax Errors</source>
+        <translation>構文エラーの表示</translation>
+    </message>
+    <message>
+        <source>Copy with MIME type</source>
+        <translation>MIME typeを含めてコピー</translation>
+    </message>
+    <message>
+        <source>Plug-in parameter</source>
+        <translation>プラグインの引数</translation>
+    </message>
+    <message>
+        <source>Wi&amp;ndows</source>
+        <translation type="vanished">ウィンドウ(&amp;N)</translation>
+    </message>
+    <message>
+        <source>Embed style (macros)</source>
+        <translation>埋め込みスタイル (macros)</translation>
+    </message>
+    <message>
+        <source>ISO-8859-10</source>
+        <translation>ISO-8859-10</translation>
+    </message>
+    <message>
+        <source>ISO-8859-11</source>
+        <translation>ISO-8859-11</translation>
+    </message>
+    <message>
+        <source>ISO-8859-12</source>
+        <translation>ISO-8859-12</translation>
+    </message>
+    <message>
+        <source>ISO-8859-13</source>
+        <translation>ISO-8859-13</translation>
+    </message>
+    <message>
+        <source>ISO-8859-14</source>
+        <translation>ISO-8859-14</translation>
+    </message>
+    <message>
+        <source>ISO-8859-15</source>
+        <translation>ISO-8859-15</translation>
+    </message>
+    <message>
+        <source>Convert files</source>
+        <translation>ファイルを変換</translation>
+    </message>
+    <message>
+        <source>I&amp;mage width:</source>
+        <translation>画像幅(&amp;I)：</translation>
+    </message>
+    <message>
+        <source>Select a keyword case.</source>
+        <translation>キーワードの大文字・小文字の選択。</translation>
+    </message>
+    <message>
+        <source>Add &amp;lt;pre&amp;gt; tags to the output, if the flag &quot;No document header and footer&quot; is selected.</source>
+        <translation>フラグ「文書のヘッダとフッタなし」を選択した場合に出力に &amp;lt;pre&amp;gt; を付加。</translation>
+    </message>
+    <message>
+        <source>Remove all input files.</source>
+        <translation>全ての入力ファイルの削除。</translation>
+    </message>
+    <message>
+        <source>Enter the maximum line length.</source>
+        <translation>最大行数の入力。</translation>
+    </message>
+    <message>
+        <source>Enter the SVG width (may contain units).</source>
+        <translation>SVG幅の入力（単位を含められます）。</translation>
+    </message>
+    <message>
+        <source>Output Logs</source>
+        <translation>ログ出力</translation>
+    </message>
+    <message>
+        <source>&amp;Visit andre-simon.de</source>
+        <translation>andre-simon.deを開く(&amp;V)</translation>
+    </message>
+    <message>
+        <source>Load &amp;default project</source>
+        <translation>既定のプロジェクトを開く(&amp;D)</translation>
+    </message>
+    <message>
+        <source>Add line numbers to the output.</source>
+        <translation>出力に行番号を付加。</translation>
+    </message>
+    <message>
+        <source>Choose the source code files you want to convert.</source>
+        <translation>変換するソースコードファイルの選択。</translation>
+    </message>
+    <message>
+        <source>Copy file to clipboard</source>
+        <translation>ファイルをクリップボードにコピー</translation>
+    </message>
+    <message>
+        <source>Stylesheets</source>
+        <translation>スタイルシート</translation>
+    </message>
+    <message>
+        <source>Replace default symbols (brackets, tilde) by nice redefinitions.</source>
+        <translation>既定の記号（中括弧とチルダ）をいい感じの再定義により置き換える。</translation>
+    </message>
+    <message>
+        <source>Executable:</source>
+        <translation>実行ファイル：</translation>
+    </message>
+    <message>
+        <source>Script description</source>
+        <translation>スクリプトの説明</translation>
+    </message>
+    <message>
+        <source>Omit header and footer</source>
+        <translation>ヘッダーとフッターを省略</translation>
+    </message>
+    <message>
+        <source>Output for&amp;mat:</source>
+        <translation>出力形式(&amp;M)：</translation>
+    </message>
+    <message>
+        <source>Paste code from clipboard and copy the output back in one step</source>
+        <translation>クリップボードからの貼り付けから出力へのコピーを一度にする</translation>
+    </message>
+    <message>
+        <source>Reformat:</source>
+        <translatorcomment>code formattingの文脈です。</translatorcomment>
+        <translation>再整形：</translation>
+    </message>
+    <message>
+        <source>Add CSS information to each tag (do not use CSS class definitions).</source>
+        <translation>CSS 情報をそれぞれのタグに追加（CSSクラス定義を使ってはなりません）。</translation>
+    </message>
+    <message>
+        <source>Enter the font size.</source>
+        <translation>フォントの大きさを入力。</translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation>一般</translation>
+    </message>
+    <message>
+        <source>Output specific</source>
+        <translation>出力指定</translation>
+    </message>
+    <message>
+        <source>Name of the referenced  style file.</source>
+        <translation>参照されるスタイルファイルの名前。</translation>
+    </message>
+    <message>
+        <source>CSS class prefix:</source>
+        <translation>CSSのクラスの前置詞：</translation>
+    </message>
+    <message>
+        <source>Highlight</source>
+        <translation>Highlight</translation>
+    </message>
+    <message>
+        <source>Add Babel compatibility</source>
+        <translation>Babel互換性を付加</translation>
+    </message>
+    <message>
+        <source>Add a CSS class name prefix to avoid namespace clashes.</source>
+        <translation>名前空間の衝突を避けるため CSSクラス名の前置詞を追加。</translation>
+    </message>
+    <message>
+        <source>Improve token recognition with semantic highlighting.</source>
+        <translation>意味論的ハイライトによる字句認識の改善。</translation>
+    </message>
+    <message>
+        <source>Add custom script to pool</source>
+        <translation>独自スクリプトをプールに追加</translation>
+    </message>
+    <message>
+        <source>Height:</source>
+        <translation>高さ：</translation>
+    </message>
+    <message>
+        <source>Select or enter the font name. HTML supports a list of fonts, separated with comma.</source>
+        <translation>フォント名の選択。HTMLで対応しているフォントの一覧をカンマで区切る。</translation>
+    </message>
+    <message>
+        <source>Paste, Convert and Copy</source>
+        <translation>貼り付け、変換後コピー</translation>
+    </message>
+    <message>
+        <source>Enter the SVG height (may contain units).</source>
+        <translation>SVGの高さを入力（単位を含められます）。</translation>
+    </message>
+    <message>
+        <source>Select the line number width.</source>
+        <translation>行番号の幅を選択。</translation>
+    </message>
+    <message>
+        <source>Output directory</source>
+        <translation>出力ディレクトリ</translation>
+    </message>
+    <message>
+        <source>Path of the server executable.</source>
+        <translation>サーバー実行ファイルのパス。</translation>
+    </message>
+    <message>
+        <source>Indent statements and function parameters after wrapping.</source>
+        <translation>行の折り返し後の文と関数引数の字下げ。</translation>
+    </message>
+    <message>
+        <source>&amp;File access trace (W32)</source>
+        <translation>ファイルへのアクセスをトレース(&amp;F) (W32)</translation>
+    </message>
+    <message>
+        <source>You can check one file of each type (syntax and theme) to override the default behaviour. If checked, the scripts will be watched for changes.</source>
+        <translation>既定の挙動を置き換えるには、各種（構文とテーマ）のファイルにチェックを付けてください。チェックを付けるとスクリプトが変更を監視します。</translation>
+    </message>
+    <message>
+        <source>Check Capabilities</source>
+        <translation>機能を検査</translation>
+    </message>
+    <message>
+        <source>Do not require a server capabilities response</source>
+        <translation>サーバーの機能についての応答を必要としません</translation>
+    </message>
+    <message>
+        <source>Legacy Protocol</source>
+        <translation>古いプロトコル</translation>
+    </message>
+    <message>
+        <source>XTerm256 ESC</source>
+        <translation>XTerm 256 ESC</translation>
+    </message>
+    <message>
+        <source>Add pretty symbols</source>
+        <translation>装飾記号を追加</translation>
+    </message>
+    <message>
+        <source>Legal</source>
+        <translation>リーガル</translation>
+    </message>
+    <message>
+        <source>UPPER</source>
+        <translation>全て大文字</translation>
+    </message>
+    <message>
+        <source>lower</source>
+        <translation>全て小文字</translation>
+    </message>
+    <message>
+        <source>Capitalize</source>
+        <translation>先頭のみ大文字</translation>
+    </message>
+    <message>
+        <source>10</source>
+        <translation>10</translation>
+    </message>
+</context>
+<context>
+    <name>ShowTextFile</name>
+    <message>
+        <source>OK</source>
+        <translation>はい</translation>
+    </message>
+    <message>
+        <source>Show text</source>
+        <translation>テキストを表示</translation>
+    </message>
+    <message>
+        <source>TextLabel</source>
+        <translation>テキストラベル</translation>
+    </message>
+</context>
+<context>
+    <name>io_report</name>
+    <message>
+        <source>Output errors:</source>
+        <translation>出力エラー：</translation>
+    </message>
+    <message>
+        <source>Failed syntax tests:</source>
+        <translation>構文検査に失敗：</translation>
+    </message>
+    <message>
+        <source>Error summary</source>
+        <translation>エラー概要</translation>
+    </message>
+    <message>
+        <source>Remove files above from input file list</source>
+        <translation>入力ファイル一覧から上記ファイルを削除</translation>
+    </message>
+    <message>
+        <source>Input errors:</source>
+        <translation>入力エラー：</translation>
+    </message>
+    <message>
+        <source>Reformatting not possible:</source>
+        <translatorcomment>code formatの文脈です。</translatorcomment>
+        <translation>再整形できません：</translation>
+    </message>
+</context>
+<context>
+    <name>syntax_chooser</name>
+    <message>
+        <source>These entries are configured in filetypes.conf.</source>
+        <translation>これらの項目はfiletypes.confで構成されます。</translation>
+    </message>
+    <message>
+        <source>The selection will be remembered for this session.</source>
+        <translation>本セッションで選択が保存されます。</translation>
+    </message>
+    <message>
+        <source>Select correct syntax</source>
+        <translation>正しい構文を選択</translation>
+    </message>
+    <message>
+        <source>Syntax selection</source>
+        <translation>構文の選択</translation>
+    </message>
+    <message>
+        <source>The file extension %1 is assigned to multiple syntax definitions.
+Select the correct one:</source>
+        <translation>ファイル拡張子 %1 は複数の構文定義に割り当てられています。
+正しいものを選択してください：</translation>
+    </message>
+    <message>
+        <source>TextLabel</source>
+        <translation>テキストラベル</translation>
+    </message>
+    <message>
+        <source>Remember selection</source>
+        <translation>選択を保存</translation>
+    </message>
+</context>
+</TS>

@@ -1,0 +1,21 @@
+.DS_Store
+
+## User settings
+xcuserdata/
+jpcre2.xcodeproj/xcuserdata/
+pcre2.xcodeproj/xcuserdata/*
+
+cmark-gfm/cmark-arm64/
+cmark-gfm/cmark-x86_64/
+
+highlight-wrapper/lua-5.5.0/src/lua
+highlight-wrapper/lua-5.5.0/src/luac
+highlight-wrapper/highlight/src/*.o
+highlight-wrapper/highlight/src/*.d
+
+build/**
+
+/*/.idea/
+
+*.dSYM
+/highlight-wrapper/lua-5.5.0/src/luac
