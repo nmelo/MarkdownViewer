@@ -810,7 +810,12 @@ MathJax = {
 };
 </script>
 """
-            s_footer += mathExtension.getScriptCode(extraTagLink: "id='MathJax-script' async", extraTagEmbed: "id='MathJax-script'")
+            // Always load MathJax from the CDN. The cached file in
+            // ~/Library/Application Support never resolves correctly inside
+            // WKWebView because the page's baseURL is the markdown's directory,
+            // not the cache directory.
+            let mathSrc = Self.mathJaxWebUrl
+            s_footer += "<script type='text/javascript' id='MathJax-script' async src='\(mathSrc.absoluteString)'></script>\n"
         }
 
         // Mermaid diagrams support
@@ -819,15 +824,56 @@ MathJax = {
             // Transform mermaid code blocks to mermaid divs
             processedBody = transformMermaidBlocks(body)
 
-            // Inject mermaid.min.js
-            s_footer += mermaidExtension.getScriptCode()
+            // Mermaid 11 is ESM-only; load it as a module and call initialize
+            // after import. Use theme: 'base' with explicit variables so text
+            // is high-contrast in both light and dark modes (the built-in
+            // 'dark' theme uses muted grays that are hard to read).
+            let mermaidSrc = Self.mermaidWebUrl.absoluteString
             s_footer += """
-<script type="text/javascript">
-mermaid.initialize({
-startOnLoad: true,
-theme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default',
-securityLevel: 'strict'
-});
+<script type="module">
+  import mermaid from "\(mermaidSrc)";
+  const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    themeVariables: dark ? {
+      darkMode: true,
+      background: '#0d1117',
+      primaryColor: '#1c2128',
+      primaryTextColor: '#fcd34d',
+      primaryBorderColor: '#58a6ff',
+      secondaryColor: '#2d333b',
+      secondaryTextColor: '#fcd34d',
+      tertiaryColor: '#22272e',
+      tertiaryTextColor: '#fcd34d',
+      lineColor: '#c9d1d9',
+      textColor: '#fcd34d',
+      noteBkgColor: '#3b3b3b',
+      noteTextColor: '#fcd34d',
+      noteBorderColor: '#8b949e',
+      actorBkg: '#1c2128',
+      actorBorder: '#58a6ff',
+      actorTextColor: '#fcd34d',
+      actorLineColor: '#8b949e',
+      labelBoxBkgColor: '#1c2128',
+      labelBoxBorderColor: '#58a6ff',
+      labelTextColor: '#fcd34d',
+      loopTextColor: '#fcd34d',
+      activationBkgColor: '#2d333b',
+      activationBorderColor: '#58a6ff',
+      signalColor: '#fcd34d',
+      signalTextColor: '#fcd34d'
+    } : {
+      darkMode: false,
+      background: '#ffffff',
+      primaryColor: '#f6f8fa',
+      primaryTextColor: '#1f2328',
+      primaryBorderColor: '#0366d6',
+      lineColor: '#1f2328',
+      textColor: '#1f2328'
+    },
+    securityLevel: 'strict'
+  });
 </script>
 """
         }

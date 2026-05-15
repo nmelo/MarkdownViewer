@@ -1,4 +1,17 @@
-# MarkdownViewer
+<p align="center">
+  <img src="./docs/logo.png" width="128" alt="MarkdownViewer icon">
+</p>
+
+<h1 align="center">MarkdownViewer</h1>
+
+<p align="center">
+  <a href="https://github.com/nmelo/MarkdownViewer/releases/latest"><img src="https://img.shields.io/github/v/release/nmelo/MarkdownViewer?label=release&color=blue" alt="Latest release"></a>
+  <a href="https://github.com/nmelo/MarkdownViewer/releases"><img src="https://img.shields.io/github/downloads/nmelo/MarkdownViewer/total?color=blue" alt="Total downloads"></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/github/license/nmelo/MarkdownViewer?color=blue" alt="License"></a>
+  <img src="https://img.shields.io/badge/macOS-12%2B-blue" alt="macOS 12+">
+  <img src="https://img.shields.io/badge/Swift-5-orange" alt="Swift 5">
+  <a href="https://github.com/nmelo/MarkdownViewer/releases/latest"><img src="https://img.shields.io/badge/Developer%20ID-signed%20%26%20notarized-success" alt="Signed & notarized"></a>
+</p>
 
 A standalone macOS markdown viewer with live file reload. Opens a `.md` file, renders it, and re-renders automatically on every save.
 

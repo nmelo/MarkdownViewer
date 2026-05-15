@@ -5,6 +5,8 @@
   --body-border-color: #dfdfdf;
   --link: #0366d6;
   --link-highlight: rgba(3, 102, 214, 0.08);
+  --strong: #1f6feb;
+  --inline-code: #8a6d3b;
   --code-background: #f7f7f9;
   --hr-background: #e3e4e8;
   --thead-background: #f7f7f9;
@@ -56,6 +58,8 @@
   --body-border-color: #31363C;
   --link: #58a6ff;
   --link-highlight: rgba(3, 102, 214, 0.08);
+  --strong: #79c0ff;
+  --inline-code: #d4a72c;
   --code-background: #2f3438;
   --hr-background: #30363d;
   --thead-background: #f7f7f9;
@@ -146,16 +150,6 @@ body {
   background-color: var(--background);
 }
 
-/* If the window is bigger than 902 pixels, the border will be visible. */
-@media (min-width: 902px) {
-  article {
-    border-radius: 8px;
-    border-width: 1px;  
-    border-style: solid;
-    border-color: var(--body-border-color);
-  }
-}
-
 article {
   margin: auto;
   max-width: 902px;
@@ -163,6 +157,10 @@ article {
   line-height: 1.5;
   word-wrap: break-word;
   padding: 32px;
+}
+
+article.wide {
+  max-width: none;
 }
 
 a {
@@ -315,6 +313,7 @@ input[type="checkbox"] {
   margin-bottom: 16px;
   font-weight: 600;
   line-height: 1.25;
+  color: var(--link);
 }
 
 .markdown-body h1 .octicon-link, .markdown-body h2 .octicon-link, .markdown-body h3 .octicon-link, .markdown-body h4 .octicon-link, .markdown-body h5 .octicon-link, .markdown-body h6 .octicon-link {
@@ -554,7 +553,12 @@ input[type="checkbox"] {
   margin: 0;
   font-size: 85%;
   background-color: var(--code-background);
+  color: var(--inline-code);
   border-radius: 6px;
+}
+
+.markdown-body strong, .markdown-body b {
+  color: var(--strong);
 }
 
 .markdown-body code br, .markdown-body tt br {
@@ -606,6 +610,7 @@ input[type="checkbox"] {
   line-height: inherit;
   word-wrap: normal;
   background-color: initial;
+  color: inherit;
   border: 0;
 }
 

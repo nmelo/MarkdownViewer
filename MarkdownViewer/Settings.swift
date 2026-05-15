@@ -597,7 +597,10 @@ class Settings: Codable {
 // MARK: - Mermaid support
 extension Settings {
     /// Url from which to download the mermaid library.
-    static let mermaidWebUrl = URL(string: "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js")!
+    /// Mermaid v11+ no longer ships a UMD bundle that exposes `window.mermaid`
+    /// from `mermaid.min.js` — that file is now an esbuild ESM wrapper. Use
+    /// the explicit `.esm.min.mjs` and load it via `<script type="module">`.
+    static let mermaidWebUrl = URL(string: "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs")!
     
     /// Local file with the mermaid library.
     static var mermaidCacheFileUrl: URL? {

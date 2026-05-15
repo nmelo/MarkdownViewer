@@ -6,6 +6,7 @@
 //
 
 import Cocoa
+@preconcurrency import WebKit
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     /// Open windows, each backing one document (or an empty draft).
@@ -33,6 +34,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationShouldOpenUntitledFile(_ sender: NSApplication) -> Bool {
         return false
     }
+
+    static let mainFrameDefaultsKey = "MainWindowFrame"
 
     static var defaultWindowTitle: String {
         let info = Bundle.main.infoDictionary
@@ -151,16 +154,49 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             defer: false
         )
         window.contentView = v
+        // Assigning contentView can shrink the window to AL-intrinsic size of
+        // any subview that uses Auto Layout (the FindBar does). Force the
+        // intended content size back.
+        window.setContentSize(initialSize)
+        window.contentMinSize = NSSize(width: 480, height: 320)
         window.title = AppDelegate.defaultWindowTitle
-        window.tabbingMode = .preferred
+        window.tabbingMode = .disallowed
         window.isReleasedWhenClosed = false
 
-        // Cascade so consecutive new windows don't stack on top of each other.
-        if let previous = owners.last?.windowController.window {
+        // Remember position + size across launches. Only the first window of
+        // each session restores from defaults; subsequent windows cascade from
+        // the previous window in this session.
+        if owners.isEmpty {
+            if let str = UserDefaults.standard.string(forKey: AppDelegate.mainFrameDefaultsKey) {
+                let saved = NSRectFromString(str)
+                // Make sure the saved frame still falls on an available screen.
+                if NSScreen.screens.contains(where: { $0.visibleFrame.intersects(saved) }) {
+                    window.setFrame(saved, display: false)
+                } else {
+                    window.center()
+                }
+            } else {
+                window.center()
+            }
+        } else if let previous = owners.last?.windowController.window {
             let topLeft = previous.cascadeTopLeft(from: .zero)
             window.cascadeTopLeft(from: topLeft)
         } else {
             window.center()
+        }
+
+        // Persist this window's frame whenever it moves or resizes. We only
+        // track the first window of the session so the "remembered" frame
+        // matches the user's primary one rather than the cascaded extras.
+        let isFirstWindow = owners.isEmpty
+        if isFirstWindow {
+            let persist = { [weak window] in
+                guard let w = window else { return }
+                UserDefaults.standard.set(NSStringFromRect(w.frame), forKey: AppDelegate.mainFrameDefaultsKey)
+            }
+            for name in [NSWindow.didResizeNotification, NSWindow.didMoveNotification] {
+                NotificationCenter.default.addObserver(forName: name, object: window, queue: .main) { _ in persist() }
+            }
         }
 
         let wc = NSWindowController(window: window)
@@ -272,6 +308,45 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         editItem.submenu = editMenu
         editMenu.addItem(withTitle: "Copy", action: #selector(NSText.copy(_:)), keyEquivalent: "c")
         editMenu.addItem(withTitle: "Select All", action: #selector(NSText.selectAll(_:)), keyEquivalent: "a")
+        editMenu.addItem(.separator())
+        // Find submenu — selectors fire on the firstResponder, which is the front window's ViewController.
+        let findSub = NSMenu(title: "Find")
+        let findItem = NSMenuItem(title: "Find", action: nil, keyEquivalent: "")
+        findItem.submenu = findSub
+        editMenu.addItem(findItem)
+        findSub.addItem(withTitle: "Find…",
+                        action: #selector(ViewController.performFind(_:)),
+                        keyEquivalent: "f")
+        let findNext = NSMenuItem(title: "Find Next",
+                                  action: #selector(ViewController.findNext(_:)),
+                                  keyEquivalent: "g")
+        findSub.addItem(findNext)
+        let findPrev = NSMenuItem(title: "Find Previous",
+                                  action: #selector(ViewController.findPrevious(_:)),
+                                  keyEquivalent: "g")
+        findPrev.keyEquivalentModifierMask = [.command, .shift]
+        findSub.addItem(findPrev)
+
+        // View menu
+        let viewItem = NSMenuItem()
+        mainMenu.addItem(viewItem)
+        let viewMenu = NSMenu(title: "View")
+        viewItem.submenu = viewMenu
+        viewMenu.addItem(withTitle: "Zoom In",
+                         action: #selector(ViewController.zoomIn(_:)),
+                         keyEquivalent: "+")
+        viewMenu.addItem(withTitle: "Zoom Out",
+                         action: #selector(ViewController.zoomOut(_:)),
+                         keyEquivalent: "-")
+        viewMenu.addItem(withTitle: "Actual Size",
+                         action: #selector(ViewController.zoomReset(_:)),
+                         keyEquivalent: "0")
+        viewMenu.addItem(.separator())
+        let wideItem = NSMenuItem(title: "Toggle Wide",
+                                  action: #selector(ViewController.toggleWide(_:)),
+                                  keyEquivalent: "w")
+        wideItem.keyEquivalentModifierMask = [.command, .shift]
+        viewMenu.addItem(wideItem)
 
         // Window menu
         let windowItem = NSMenuItem()
@@ -290,11 +365,37 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                            keyEquivalent: "")
         NSApp.windowsMenu = windowMenu
 
+        // Help menu
+        let helpItem = NSMenuItem()
+        mainMenu.addItem(helpItem)
+        let helpMenu = NSMenu(title: "Help")
+        helpItem.submenu = helpMenu
+        let helpEntry = NSMenuItem(title: "Markdown Viewer Help",
+                                   action: #selector(AppDelegate.showHelp(_:)),
+                                   keyEquivalent: "?")
+        helpEntry.keyEquivalentModifierMask = [.command]
+        helpEntry.target = self
+        helpMenu.addItem(helpEntry)
+        NSApp.helpMenu = helpMenu
+
         NSApp.mainMenu = mainMenu
     }
 
     @objc func newDocument(_ sender: Any?) {
         _ = openNewWindow()
+        NSApp.activate(ignoringOtherApps: true)
+    }
+
+    // MARK: - Help
+
+    private var helpPanel: NSPanel?
+
+    @objc func showHelp(_ sender: Any?) {
+        if helpPanel == nil {
+            helpPanel = HelpPanel.make()
+        }
+        helpPanel?.center()
+        helpPanel?.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
     }
 
@@ -342,6 +443,126 @@ final class ViewerDocumentController: NSDocumentController {
             (NSApp.delegate as? AppDelegate)?.openFile(contentsURL)
             completionHandler(nil, true, nil)
         }
+    }
+}
+
+/// A small floating panel that shows keyboard shortcuts + app info, opened
+/// with ⌘? from the Help menu. Lives apart from any document window so it's
+/// available even when no file is open.
+enum HelpPanel {
+    static func make() -> NSPanel {
+        let size = NSSize(width: 460, height: 540)
+        let panel = NSPanel(
+            contentRect: NSRect(origin: .zero, size: size),
+            styleMask: [.titled, .closable, .resizable, .fullSizeContentView, .hudWindow],
+            backing: .buffered,
+            defer: false
+        )
+        panel.title = "Markdown Viewer Help"
+        panel.titleVisibility = .hidden
+        panel.titlebarAppearsTransparent = true
+        panel.isFloatingPanel = true
+        panel.becomesKeyOnlyIfNeeded = false
+        panel.hidesOnDeactivate = false
+        panel.isReleasedWhenClosed = false
+
+        let webView = WKWebView(frame: NSRect(origin: .zero, size: size))
+        webView.autoresizingMask = [.width, .height]
+        webView.setValue(false, forKey: "drawsBackground")
+        webView.loadHTMLString(html(), baseURL: nil)
+        panel.contentView = webView
+
+        return panel
+    }
+
+    private static func html() -> String {
+        let info = Bundle.main.infoDictionary
+        let version = info?["CFBundleShortVersionString"] as? String ?? ""
+        let build = info?["CFBundleVersion"] as? String ?? ""
+        let copyright = info?["NSHumanReadableCopyright"] as? String ?? ""
+
+        return """
+        <!doctype html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            :root { color-scheme: light dark; }
+            html, body { margin: 0; height: 100%; }
+            body {
+              font-family: -apple-system, system-ui, sans-serif;
+              padding: 22px 26px;
+              line-height: 1.45;
+              color: #1d1d1f; background: rgba(245,245,247,0.94);
+            }
+            h1 { font-size: 17px; margin: 0 0 4px; font-weight: 600; }
+            .version { font-size: 12px; color: #6b6b6f; margin-bottom: 18px; }
+            h2 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em;
+                 color: #6b6b6f; margin: 18px 0 8px; font-weight: 600; }
+            table { width: 100%; border-collapse: collapse; font-size: 13px; }
+            td { padding: 4px 0; vertical-align: top; }
+            td.key {
+              white-space: nowrap; padding-right: 14px; color: #1d1d1f;
+              font-family: ui-monospace, Menlo, monospace; font-size: 12px;
+            }
+            kbd {
+              display: inline-block; padding: 1px 6px; min-width: 18px; text-align: center;
+              border-radius: 4px; background: rgba(0,0,0,0.08);
+              font-family: ui-monospace, Menlo, monospace; font-size: 11px;
+            }
+            a { color: #0366d6; text-decoration: none; }
+            a:hover { text-decoration: underline; }
+            .foot { margin-top: 18px; font-size: 11px; color: #6b6b6f; }
+            @media (prefers-color-scheme: dark) {
+              body { color: #f0f6fc; background: rgba(20,20,22,0.92); }
+              h2, .foot, .version { color: #8b949e; }
+              td.key { color: #f0f6fc; }
+              kbd { background: rgba(255,255,255,0.10); color: #f0f6fc; }
+              a { color: #58a6ff; }
+            }
+          </style>
+        </head>
+        <body>
+          <h1>Markdown Viewer</h1>
+          <div class="version">Version \(version) (\(build))</div>
+
+          <h2>File</h2>
+          <table>
+            <tr><td class="key"><kbd>⌘</kbd> <kbd>N</kbd></td><td>New window</td></tr>
+            <tr><td class="key"><kbd>⌘</kbd> <kbd>O</kbd></td><td>Open file…</td></tr>
+            <tr><td class="key"><kbd>⌘</kbd> <kbd>R</kbd></td><td>Reload current document</td></tr>
+            <tr><td class="key"><kbd>⌘</kbd> <kbd>W</kbd></td><td>Close window</td></tr>
+          </table>
+
+          <h2>Find</h2>
+          <table>
+            <tr><td class="key"><kbd>⌘</kbd> <kbd>F</kbd></td><td>Find in page</td></tr>
+            <tr><td class="key"><kbd>⌘</kbd> <kbd>G</kbd></td><td>Find next</td></tr>
+            <tr><td class="key"><kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>G</kbd></td><td>Find previous</td></tr>
+            <tr><td class="key"><kbd>esc</kbd></td><td>Dismiss find bar</td></tr>
+          </table>
+
+          <h2>View</h2>
+          <table>
+            <tr><td class="key"><kbd>⌘</kbd> <kbd>+</kbd></td><td>Zoom in</td></tr>
+            <tr><td class="key"><kbd>⌘</kbd> <kbd>−</kbd></td><td>Zoom out</td></tr>
+            <tr><td class="key"><kbd>⌘</kbd> <kbd>0</kbd></td><td>Actual size</td></tr>
+            <tr><td class="key">pinch</td><td>Zoom (trackpad)</td></tr>
+            <tr><td class="key"><kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>W</kbd></td><td>Toggle wide / max-width</td></tr>
+          </table>
+
+          <h2>Help</h2>
+          <table>
+            <tr><td class="key"><kbd>⌘</kbd> <kbd>?</kbd></td><td>Show this panel</td></tr>
+          </table>
+
+          <div class="foot">
+            <a href="https://github.com/nmelo/MarkdownViewer">github.com/nmelo/MarkdownViewer</a><br>
+            \(copyright)
+          </div>
+        </body>
+        </html>
+        """
     }
 }
 
