@@ -69,18 +69,6 @@ class ViewController: NSViewController {
         return true
     }
 
-    @IBAction func openDocument(_ sender: Any?) {
-        let panel = NSOpenPanel()
-        panel.canChooseDirectories = false
-        panel.canCreateDirectories = false
-        panel.allowsMultipleSelection = false
-        panel.allowedFileTypes = ["md", "markdown", "rmd", "qmd", "mdown", "mkd", "mkdn", "textbundle"]
-        panel.message = "Select a Markdown file to view"
-        if panel.runModal() == .OK, let url = panel.url {
-            openMarkdown(file: url)
-        }
-    }
-
     @IBAction func reloadDocument(_ sender: Any?) {
         render()
     }

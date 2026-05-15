@@ -2,14 +2,19 @@
 //  AppDelegate.swift
 //  MarkdownViewer
 //
-//  Standalone Markdown viewer with live file reload.
+//  Standalone Markdown viewer with live file reload + multi-window.
 //
 
 import Cocoa
 
 class AppDelegate: NSObject, NSApplicationDelegate {
-    private var mainWindowController: NSWindowController?
-    private(set) var viewController: ViewController?
+    /// Open windows, each backing one document (or an empty draft).
+    private struct Owner {
+        let windowController: NSWindowController
+        let viewController: ViewController
+    }
+
+    private var owners: [Owner] = []
 
     // Installing this subclass before AppKit asks for the shared instance
     // prevents the default NSDocumentController from rejecting our file types
@@ -29,16 +34,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return false
     }
 
-    func openFile(_ url: URL) {
-        showMainWindow()
-        _ = viewController?.openMarkdown(file: url)
-    }
-
     static var defaultWindowTitle: String {
         let info = Bundle.main.infoDictionary
         let version = info?["CFBundleShortVersionString"] as? String ?? ""
         return version.isEmpty ? "Markdown Viewer" : "Markdown Viewer \(version)"
     }
+
+    // MARK: - Lifecycle
 
     func applicationWillFinishLaunching(_ notification: Notification) {
         // Install our Apple Event handler BEFORE NSDocumentController installs its
@@ -57,19 +59,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         guard let list = event.paramDescriptor(forKeyword: keyDirectObject) else { return }
         let count = list.numberOfItems
         guard count > 0 else { return }
-        var lastURL: URL?
         for i in 1...count {
             guard let item = list.atIndex(i) else { continue }
             // typeFileURL descriptors expose the URL via stringValue ("file:///…").
             if let s = item.stringValue, let url = URL(string: s), url.isFileURL {
-                lastURL = url
+                openFile(url)
             } else if let data = item.data as Data?,
                       let url = URL(dataRepresentation: data, relativeTo: nil) {
-                lastURL = url
+                openFile(url)
             }
-        }
-        if let url = lastURL {
-            openFile(url)
         }
     }
 
@@ -84,20 +82,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         buildMenu()
-        showMainWindow()
+
+        // If launch didn't bring any windows in (no file dragged on the icon, no
+        // "open" Apple Event), start with one empty window.
+        if owners.isEmpty {
+            _ = openNewWindow()
+        }
     }
 
     func application(_ sender: NSApplication, openFile filename: String) -> Bool {
-        let file = URL(fileURLWithPath: filename)
-        showMainWindow()
-        return viewController?.openMarkdown(file: file) ?? false
+        openFile(URL(fileURLWithPath: filename))
+        return true
     }
 
     func application(_ application: NSApplication, open urls: [URL]) {
-        showMainWindow()
-        // Single-window viewer: only the last URL wins.
-        if let url = urls.last {
-            _ = viewController?.openMarkdown(file: url)
+        for url in urls {
+            openFile(url)
         }
     }
 
@@ -106,36 +106,87 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
-        if !flag { showMainWindow() }
+        if !flag { _ = openNewWindow() }
         return true
     }
 
-    // MARK: - Window
+    // MARK: - Window orchestration
 
-    private func showMainWindow() {
-        if mainWindowController == nil {
-            let initialSize = NSSize(width: 900, height: 700)
-            let vc = ViewController()
-            // Force view to load before we attach it to a window.
-            let v = vc.view
-            v.frame = NSRect(origin: .zero, size: initialSize)
-            let window = NSWindow(
-                contentRect: NSRect(origin: .zero, size: initialSize),
-                styleMask: [.titled, .closable, .miniaturizable, .resizable],
-                backing: .buffered,
-                defer: false
-            )
-            // Use contentView (not contentViewController) so AppKit doesn't try
-            // to re-size the window from a view controller's preferredContentSize.
-            window.contentView = v
-            window.title = AppDelegate.defaultWindowTitle
-            window.tabbingMode = .disallowed
-            window.center()
-            self.viewController = vc
-            self.mainWindowController = NSWindowController(window: window)
+    /// Open the given file. Reuses an existing window if one already shows that
+    /// path; otherwise reuses the front-most empty window if there is one;
+    /// otherwise creates a new window.
+    func openFile(_ url: URL) {
+        let std = url.standardizedFileURL
+
+        if let existing = owners.first(where: {
+            $0.viewController.markdownFile?.standardizedFileURL == std
+        }) {
+            existing.windowController.window?.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+            return
         }
-        mainWindowController?.window?.makeKeyAndOrderFront(nil)
+
+        if let empty = owners.first(where: { $0.viewController.markdownFile == nil }) {
+            _ = empty.viewController.openMarkdown(file: url)
+            empty.windowController.window?.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+            return
+        }
+
+        let owner = openNewWindow()
+        _ = owner.viewController.openMarkdown(file: url)
         NSApp.activate(ignoringOtherApps: true)
+    }
+
+    @discardableResult
+    private func openNewWindow() -> Owner {
+        let initialSize = NSSize(width: 900, height: 700)
+        let vc = ViewController()
+        let v = vc.view
+        v.frame = NSRect(origin: .zero, size: initialSize)
+        let window = NSWindow(
+            contentRect: NSRect(origin: .zero, size: initialSize),
+            styleMask: [.titled, .closable, .miniaturizable, .resizable],
+            backing: .buffered,
+            defer: false
+        )
+        window.contentView = v
+        window.title = AppDelegate.defaultWindowTitle
+        window.tabbingMode = .preferred
+        window.isReleasedWhenClosed = false
+
+        // Cascade so consecutive new windows don't stack on top of each other.
+        if let previous = owners.last?.windowController.window {
+            let topLeft = previous.cascadeTopLeft(from: .zero)
+            window.cascadeTopLeft(from: topLeft)
+        } else {
+            window.center()
+        }
+
+        let wc = NSWindowController(window: window)
+        let owner = Owner(windowController: wc, viewController: vc)
+        owners.append(owner)
+
+        NotificationCenter.default.addObserver(
+            forName: NSWindow.willCloseNotification,
+            object: window,
+            queue: .main
+        ) { [weak self] _ in
+            self?.owners.removeAll { $0.windowController === wc }
+        }
+
+        wc.window?.makeKeyAndOrderFront(nil)
+        return owner
+    }
+
+    /// The window controller / view controller pair that owns the key window,
+    /// falling back to the most recently created one if nothing is key.
+    private var frontOwner: Owner? {
+        if let keyWindow = NSApp.keyWindow,
+           let match = owners.first(where: { $0.windowController.window === keyWindow }) {
+            return match
+        }
+        return owners.last
     }
 
     // MARK: - Menu
@@ -181,12 +232,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let fileMenu = NSMenu(title: "File")
         fileItem.submenu = fileMenu
 
+        let newItem = NSMenuItem(title: "New Window",
+                                 action: #selector(AppDelegate.newDocument(_:)),
+                                 keyEquivalent: "n")
+        newItem.target = self
+        fileMenu.addItem(newItem)
+
         let openItem = NSMenuItem(title: "Open…",
                                   action: #selector(AppDelegate.openDocument(_:)),
                                   keyEquivalent: "o")
         openItem.target = self
         fileMenu.addItem(openItem)
 
+        // AppKit auto-populates "Open Recent" using the NSDocumentController's
+        // recent-documents list, as long as the submenu is titled exactly that.
         let openRecent = NSMenuItem(title: "Open Recent", action: nil, keyEquivalent: "")
         let openRecentMenu = NSMenu(title: "Open Recent")
         openRecent.submenu = openRecentMenu
@@ -234,21 +293,33 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.mainMenu = mainMenu
     }
 
+    @objc func newDocument(_ sender: Any?) {
+        _ = openNewWindow()
+        NSApp.activate(ignoringOtherApps: true)
+    }
+
     @objc func openDocument(_ sender: Any?) {
-        showMainWindow()
-        viewController?.openDocument(sender)
+        let panel = NSOpenPanel()
+        panel.canChooseDirectories = false
+        panel.canCreateDirectories = false
+        panel.allowsMultipleSelection = true
+        panel.allowedFileTypes = ["md", "markdown", "rmd", "qmd", "mdown", "mkd", "mkdn", "textbundle"]
+        panel.message = "Select Markdown files to view"
+        if panel.runModal() == .OK {
+            for url in panel.urls {
+                openFile(url)
+            }
+        }
     }
 
     @objc func reloadDocument(_ sender: Any?) {
-        viewController?.reloadDocument(sender)
+        frontOwner?.viewController.reloadDocument(sender)
     }
 }
 
 /// Intercepts AppKit's NSDocument-based open flow (which Finder "Open With"
-/// triggers on apps that declare `CFBundleDocumentTypes`) and forwards the file
-/// to our non-document viewer instead. Providing a stub `documentClass`
-/// suppresses the "cannot open files in the X format" error that NSDocumentController
-/// otherwise raises before it would ever call our open methods.
+/// triggers on apps that declare `CFBundleDocumentTypes`) and forwards each file
+/// to AppDelegate.openFile so the multi-window logic decides where it lands.
 final class ViewerDocumentController: NSDocumentController {
     override func documentClass(forType typeName: String) -> AnyClass? {
         return MarkdownDocument.self
@@ -275,11 +346,8 @@ final class ViewerDocumentController: NSDocumentController {
 }
 
 /// A no-op `NSDocument` whose only purpose is to satisfy AppKit's document
-/// machinery: when it's asked to read a file, we hand the URL to the real viewer
-/// and immediately tear the document down so no empty window is left around.
-/// `@objc(MarkdownDocument)` makes the class discoverable via the `NSDocumentClass`
-/// key in Info.plist's CFBundleDocumentTypes — required for NSDocumentController
-/// to find it without an explicit Swift module prefix.
+/// machinery: when it's asked to read a file, we hand the URL to the real
+/// viewer and immediately tear the document down so no empty window is left.
 @objc(MarkdownDocument)
 final class MarkdownDocument: NSDocument {
     override class var autosavesInPlace: Bool { false }
@@ -293,8 +361,6 @@ final class MarkdownDocument: NSDocument {
     }
 
     override func makeWindowControllers() {
-        // We render in the AppDelegate's main window, not via NSWindowController.
-        // Close this document so AppKit doesn't track an invisible "open" doc.
         DispatchQueue.main.async { [weak self] in
             self?.close()
         }
