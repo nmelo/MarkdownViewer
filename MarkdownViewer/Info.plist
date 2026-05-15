@@ -61,6 +61,14 @@
 	<true/>
 	<key>NSSupportsSuddenTermination</key>
 	<false/>
+	<key>SUFeedURL</key>
+	<string>https://raw.githubusercontent.com/nmelo/MarkdownViewer/main/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>geaP1IuZQIf+j2lDU+zTEtsh5fpAPAMDyzdSqD/Qq1s=</string>
+	<key>SUEnableInstallerLauncherService</key>
+	<true/>
+	<key>SUScheduledCheckInterval</key>
+	<integer>86400</integer>
 	<key>UTImportedTypeDeclarations</key>
 	<array>
 		<dict>

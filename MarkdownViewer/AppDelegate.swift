@@ -7,6 +7,7 @@
 
 import Cocoa
 @preconcurrency import WebKit
+import Sparkle
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     /// Open windows, each backing one document (or an empty draft).
@@ -21,6 +22,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // prevents the default NSDocumentController from rejecting our file types
     // with "cannot open files in the 'Markdown Document' format".
     private var documentController: ViewerDocumentController?
+
+    /// Sparkle auto-updater. Polls the feed URL declared in Info.plist
+    /// (`SUFeedURL`), verifies signatures against `SUPublicEDKey`, prompts
+    /// the user, and installs in-place when the user confirms.
+    private(set) lazy var updaterController: SPUStandardUpdaterController =
+        SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
 
     override init() {
         super.init()
@@ -75,6 +82,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
+        // Touching the lazy var kicks the updater off so it starts polling on
+        // its scheduled interval (SUScheduledCheckInterval in Info.plist).
+        _ = updaterController
         Settings.shared.installDependencies()
 
         if let path = Settings.mermaidCacheFileUrl, !FileManager.default.fileExists(atPath: path.path) {
@@ -239,6 +249,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         appMenu.addItem(withTitle: "About \(appName)",
                         action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)),
                         keyEquivalent: "")
+        appMenu.addItem(.separator())
+        // Sparkle: "Check for Updates…" wired to the standard updater
+        // controller. The selector lives on SPUStandardUpdaterController.
+        let checkForUpdates = NSMenuItem(title: "Check for Updates…",
+                                         action: #selector(SPUStandardUpdaterController.checkForUpdates(_:)),
+                                         keyEquivalent: "")
+        checkForUpdates.target = updaterController
+        appMenu.addItem(checkForUpdates)
         appMenu.addItem(.separator())
         let services = NSMenuItem(title: "Services", action: nil, keyEquivalent: "")
         let servicesMenu = NSMenu(title: "Services")

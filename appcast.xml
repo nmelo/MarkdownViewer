@@ -1,0 +1,32 @@
+<?xml version="1.0" standalone="yes"?>
+<rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+    <channel>
+        <title>MarkdownViewer</title>
+        <link>https://raw.githubusercontent.com/nmelo/MarkdownViewer/main/appcast.xml</link>
+        <description>Standalone macOS markdown viewer with live file reload.</description>
+        <language>en</language>
+        <item>
+            <title>Version 0.0.10</title>
+            <link>https://github.com/nmelo/MarkdownViewer/releases/tag/v0.0.10</link>
+            <sparkle:version>10</sparkle:version>
+            <sparkle:shortVersionString>0.0.10</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>11.0</sparkle:minimumSystemVersion>
+            <pubDate>Fri, 15 May 2026 22:40:00 -0400</pubDate>
+            <description><![CDATA[
+                <h3>Auto-update support</h3>
+                <ul>
+                    <li>MarkdownViewer can now update itself via Sparkle. Future releases roll out automatically.</li>
+                    <li>New menu item: <strong>MarkdownViewer → Check for Updates…</strong></li>
+                    <li>Background check runs once a day; user is prompted before any install.</li>
+                </ul>
+            ]]></description>
+            <enclosure
+                url="https://github.com/nmelo/MarkdownViewer/releases/download/v0.0.10/MarkdownViewer-v0.0.10.zip"
+                sparkle:version="10"
+                sparkle:shortVersionString="0.0.10"
+                sparkle:edSignature="yA1gXx7EhcSTWXSK/REZkDVDXH5qSsxgX7JeysK6mRRbFUWPu896ChZtE8wOrAb11bXLR0eBXphgol6wd2ZIBg=="
+                length="5095230"
+                type="application/octet-stream" />
+        </item>
+    </channel>
+</rss>

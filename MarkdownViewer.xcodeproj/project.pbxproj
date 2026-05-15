@@ -87,6 +87,7 @@
 		838109C3258403CA000AFE3C /* mention.c in Sources */ = {isa = PBXBuildFile; fileRef = 838109C2258403CA000AFE3C /* mention.c */; };
 		838109C725840429000AFE3C /* checkbox.c in Sources */ = {isa = PBXBuildFile; fileRef = 838109C625840429000AFE3C /* checkbox.c */; };
 		8382D05C2664051400210A0A /* Yams in Frameworks */ = {isa = PBXBuildFile; productRef = 8382D05B2664051400210A0A /* Yams */; };
+		83AA50022F00000000000001 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 83AA50012F00000000000001 /* Sparkle */; };
 		838715FE2DE44661000DC216 /* libwrapper_highlight.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 83E7FEF7258FBF9F003ECF9B /* libwrapper_highlight.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		83A9C28E2F1D47B1005B668D /* libcurl.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 834D676827EDF554006BECBE /* libcurl.tbd */; };
 		83AA10012F00000000000001 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83AA10002F00000000000001 /* main.swift */; };
@@ -297,6 +298,7 @@
 				8382D05C2664051400210A0A /* Yams in Frameworks */,
 				836B2FF5259DEE2F00A6A5F7 /* libwrapper_highlight.dylib in Frameworks */,
 				830B5B3C272D68E500378FFE /* SwiftSoup in Frameworks */,
+				83AA50022F00000000000001 /* Sparkle in Frameworks */,
 			);
 		};
 /* End PBXFrameworksBuildPhase section */
@@ -614,6 +616,7 @@
 			packageProductDependencies = (
 				8382D05B2664051400210A0A /* Yams */,
 				830B5B3B272D68E500378FFE /* SwiftSoup */,
+				83AA50012F00000000000001 /* Sparkle */,
 			);
 			productName = MarkdownViewer;
 			productReference = 83598E6125818808004664D3 /* MarkdownViewer.app */;
@@ -647,6 +650,7 @@
 			packageReferences = (
 				8382D054266403B000210A0A /* XCRemoteSwiftPackageReference "Yams" */,
 				830B5B3A272D68E500378FFE /* XCRemoteSwiftPackageReference "SwiftSoup" */,
+				83AA50002F00000000000001 /* XCRemoteSwiftPackageReference "Sparkle" */,
 			);
 			preferredProjectObjectVersion = 100;
 			productRefGroup = 83598E6225818808004664D3 /* Products */;
@@ -959,7 +963,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = K7Z8YKVA8G;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -993,7 +997,7 @@
 					"$(BUILT_PRODUCTS_DIR)/libpcre2/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 0.0.9;
+				MARKETING_VERSION = 0.0.10;
 				PRODUCT_BUNDLE_IDENTIFIER = org.anarion.MarkdownViewer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1023,7 +1027,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = K7Z8YKVA8G;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -1057,7 +1061,7 @@
 					"$(BUILT_PRODUCTS_DIR)/libpcre2/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 0.0.9;
+				MARKETING_VERSION = 0.0.10;
 				PRODUCT_BUNDLE_IDENTIFIER = org.anarion.MarkdownViewer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1158,6 +1162,14 @@
 				minimumVersion = 6.2.0;
 			};
 		};
+		83AA50002F00000000000001 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.6.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1180,6 +1192,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 8382D054266403B000210A0A /* XCRemoteSwiftPackageReference "Yams" */;
 			productName = Yams;
+		};
+		83AA50012F00000000000001 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 83AA50002F00000000000001 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
