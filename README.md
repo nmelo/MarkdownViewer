@@ -2,6 +2,8 @@
 
 A standalone macOS markdown viewer with live file reload. Opens a `.md` file, renders it, and re-renders automatically on every save.
 
+![MarkdownViewer rendering a markdown file](./docs/screenshot.png)
+
 Fork of [sbarex/QLMarkdown](https://github.com/sbarex/QLMarkdown), trimmed down from a Quick Look extension into a plain app.
 
 ## Build
