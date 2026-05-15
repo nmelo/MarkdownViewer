@@ -45,46 +45,6 @@ enum JSExtension: Codable {
         }
     }
     
-    init?(from dict: [String: Any]) {
-        guard let state = dict[Self.CodingKeys.state.rawValue] as? Int else {
-            return nil
-        }
-        if state == 0 {
-            self = .disabled
-        } else {
-            let url: URL?
-            if dict.keys.contains(Self.CodingKeys.url.rawValue), let s = dict[Self.CodingKeys.url.rawValue] as? String, let u = URL(string: s) {
-                url = u
-            } else {
-                url = nil
-            }
-            if state == 1 {
-                self = .embed(url: url)
-            } else {
-                self = .link(url: url)
-            }
-        }
-    }
-    
-    func toDict() -> [String: Any] {
-        switch self {
-        case .disabled:
-            return [Self.CodingKeys.state.rawValue: 0]
-        case .embed(let url):
-            var r: [String: Any] = [Self.CodingKeys.state.rawValue: 1]
-            if let url {
-                r[Self.CodingKeys.url.rawValue] = url.absoluteString
-            }
-            return r
-        case .link(let url):
-            var r: [String: Any] = [Self.CodingKeys.state.rawValue: 2]
-            if let url {
-                r[Self.CodingKeys.url.rawValue] = url.absoluteString
-            }
-            return r
-        }
-    }
-    
     func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         
@@ -110,18 +70,6 @@ enum JSExtension: Codable {
             return true
         default:
             return false
-        }
-    }
-    
-    func getMode() -> (embed: Bool, url: URL?)?
-    {
-        switch self {
-        case .disabled:
-            return nil
-        case .embed(let url):
-            return (embed: true, url: url)
-        case .link(let url):
-            return (embed: false, url: url)
         }
     }
     
@@ -254,23 +202,15 @@ class Settings: Codable {
         case customCSSOverride
         case openInlineLink
         case renderAsCode
-        case qlWindowWidth
-        case qlWindowHeight
-        case about
         case debug
     }
 
     // MARK: - Static properties and methods
     
-    /// Shared App Groups name.
-    static let appGroup = "group.org.sbarex.markdownviewer"
-    
     /// Shared instance of the Settings.
     static let shared = {
-        return Settings.settingsFromSharedFile() ?? Settings()
+        return Settings()
     }()
-    
-    static let factorySettings = Settings(noInitFromDefault: true)
     
     /// URL of the Application Bundle.
     static var appBundleUrl: URL?
@@ -334,38 +274,8 @@ class Settings: Codable {
      * * SeeAlso
      * Settings.applicationSupportUrl
      */
-    static var stylesFolder: URL? {
-        return Settings.applicationSupportUrl?.appendingPathComponent("styles")
-    }
-    
-    /**
-     * URL of the folder for the js cached files.
-     * * SeeAlso
-     * Settings.applicationSupportUrl
-     */
     static var jsFolder: URL? {
         return Settings.applicationSupportUrl?.appendingPathComponent("js")
-    }
-    
-    /**
-     * Informative message.
-     */
-    static var aboutInfo: String {
-        var title: String = "<a href='https://github.com/sbarex/QLMarkdown'>";
-        if let info = Bundle.main.infoDictionary {
-            title += (info["CFBundleExecutable"] as? String ?? "MarkdownViewer") + "</a>"
-            if let version = info["CFBundleShortVersionString"] as? String,
-                let build = info["CFBundleVersion"] as? String {
-                title += ", version \(version) (\(build))"
-            }
-            if let copy = info["NSHumanReadableCopyright"] as? String {
-                title += ".<br />\n\(copy.trimmingCharacters(in: CharacterSet(charactersIn: ". ")) + " with <span style='font-style: normal'>❤️</span>")"
-            }
-        } else {
-            title += "MarkdownViewer</a>"
-        }
-        title += ".<br/>\nIf you like this app, <a href='https://www.buymeacoffee.com/sbarex'><strong>buy me a coffee</strong></a>!"
-        return title
     }
     
     /**
@@ -385,71 +295,6 @@ class Settings: Codable {
         }
         title += "\n\n-->\n"
         return title
-    }
-    
-    /**
-     * Returns the number of rendered files.
-     *
-     * Each target has its own counter.
-     **/
-    static var renderStats: Int {
-        get {
-            return UserDefaults.standard.integer(forKey: "ql-markdown-render-count");
-        }
-        set {
-            // print("Rendered \(newValue) files.")
-            UserDefaults.standard.setValue(newValue, forKey: "ql-markdown-render-count")
-            UserDefaults.standard.synchronize();
-        }
-    }
-    
-    /**
-     * Init the settins from the shared App Groups.
-     */
-    static func settingsFromSharedFile() -> Settings? {
-        var settings: Settings? = nil
-        
-        if let defaults = UserDefaults(suiteName: Self.appGroup) {
-            settings = Settings(fromUserDefaults: defaults)
-        }
-        guard let settings else {
-            return nil
-        }
-        
-        settings.customCSSFetched = true
-        settings.customCSSCode = nil
-        
-        if let url = settings.customCSS, url.lastPathComponent != "-" {
-            do {
-                let css = try String(contentsOf: url, encoding: .utf8)
-                settings.customCSSCode = css
-            } catch {
-                os_log(
-                    "Unable to fetch the CSS file %{public}@: %{public}@",
-                    log: OSLog.quickLookExtension,
-                    type: .error,
-                    url.path,
-                    error.localizedDescription
-                )
-                settings.customCSSFetched = false
-            }
-            
-            if let css = try? String(contentsOf: url, encoding: .utf8) {
-                settings.customCSSCode = css
-            } else {
-                os_log(
-                    "Unable to fetch the CSS file %{public}@!",
-                    log: OSLog.quickLookExtension,
-                    type: .error,
-                    url.path
-                )
-                settings.customCSSFetched = false
-            }
-        } else {
-            settings.customCSSCode = ""
-        }
-        
-        return settings
     }
     
     // MARK: - Instance properties and methods
@@ -495,22 +340,6 @@ class Settings: Codable {
     var openInlineLink: Bool = false
     var renderAsCode: Bool = false
 
-    /// Quick Look window width.
-    var qlWindowWidth: Int? = nil
-    /// Quick Look window height.
-    var qlWindowHeight: Int? = nil
-    /// Quick Look window size.
-    var qlWindowSize: CGSize {
-        if let w = qlWindowWidth, w > 0, let h = qlWindowHeight, h > 0 {
-            return CGSize(width: CGFloat(w), height: CGFloat(h))
-        } else {
-            return CGSize(width: 0, height: 0)
-        }
-    }
-    
-    /// Show the informative message on the footer.
-    var about: Bool = true
-    
     /// Show debug infomations.
     var debug: Bool = false
     
@@ -563,37 +392,15 @@ class Settings: Codable {
         self.customCSSCode = try container.decode(String?.self, forKey: .customCSSCode)
         self.customCSSOverride = try container.decode(Bool.self, forKey: .customCSSOverride)
         
-        self.about = try container.decode(Bool.self, forKey: .about)
         self.debug = try container.decode(Bool.self, forKey: .debug)
-        
+
         self.openInlineLink = try container.decode(Bool.self, forKey: .openInlineLink)
         self.renderAsCode = try container.decode(Bool.self, forKey: .renderAsCode)
-
-        self.qlWindowWidth = try container.decode(Int?.self, forKey: .qlWindowWidth)
-        self.qlWindowHeight = try container.decode(Int?.self, forKey: .qlWindowHeight)
     }
     
     init() { }
-    
-    init(defaults defaultsDomain: [String: Any]) {
-        self.update(from: defaultsDomain)
-    }
-    
-    convenience init(fromUserDefaults defaults: UserDefaults) {
-        self.init()
-        update(from: defaults.dictionaryRepresentation())
-    }
-    
-    private init(noInitFromDefault: Bool = false) {
-        if !noInitFromDefault {
-            self.initFromDefaults()
-        }
-    }
 
-    deinit {
-        stopMonitorChange()
-    }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         
@@ -639,280 +446,10 @@ class Settings: Codable {
         try container.encode(self.customCSSFetched, forKey: .customCSSCodeFetched)
         try container.encode(self.customCSSOverride, forKey: .customCSSOverride)
         
-        try container.encode(self.about, forKey: .about)
         try container.encode(self.debug, forKey: .debug)
-    
+
         try container.encode(self.openInlineLink, forKey: .openInlineLink)
         try container.encode(self.renderAsCode, forKey: .renderAsCode)
-
-        try container.encode(self.qlWindowWidth, forKey: .qlWindowWidth)
-        try container.encode(self.qlWindowHeight, forKey: .qlWindowHeight)
-    }
-    
-    func initFromDefaults() {
-        if let s = Settings.settingsFromSharedFile() {
-            update(from: s)
-        }
-    }
-    
-    private(set) var isMonitoring = false
-    /**
-     * Monitors settings changes by other processes.
-     */
-    func startMonitorChange() {
-        guard !isMonitoring else {
-            return
-        }
-        isMonitoring = true
-        DistributedNotificationCenter.default().addObserver(self, selector: #selector(self.handleSettingsChanged(_:)), name: .MarkdownViewerSettingsUpdated, object: nil)
-    }
-    /**
-     * Suspend the settings changes monitor.
-     */
-    func stopMonitorChange() {
-        if isMonitoring {
-            DistributedNotificationCenter.default().removeObserver(self)
-            isMonitoring = false
-        }
-    }
-    
-    /**
-     * Reloads settings after they have been changed by another process.
-     */
-    @objc func handleSettingsChanged(_ notification: NSNotification) {
-        // print("settings changed")
-        self.initFromDefaults()
-    }
-    
-    /**
-     * Update settings based on other settings provided.
-     */
-    func update(from s: Settings) {
-        self.tableExtension = s.tableExtension
-        self.autoLinkExtension = s.autoLinkExtension
-        self.tagFilterExtension = s.tagFilterExtension
-        self.taskListExtension = s.taskListExtension
-        
-        self.yamlExtension = s.yamlExtension
-        
-        self.strikethroughExtension = s.strikethroughExtension
-        
-        self.mathExtension = s.mathExtension
-        self.mermaidExtension = s.mermaidExtension
-        self.mentionExtension = s.mentionExtension
-        self.checkboxExtension = s.checkboxExtension
-        self.headsExtension = s.headsExtension
-        
-        self.highlightExtension = s.highlightExtension
-        
-        self.syntaxHighlightExtension = s.syntaxHighlightExtension
-        self.syntaxWordWrapOption = s.syntaxWordWrapOption
-        self.syntaxLineNumbersOption = s.syntaxLineNumbersOption
-        self.syntaxTabsOption = s.syntaxTabsOption
-        
-        self.subExtension = s.subExtension
-        self.supExtension = s.supExtension
-        
-        self.emojiExtension = s.emojiExtension
-        
-        self.inlineImageExtension = s.inlineImageExtension
-        
-        self.hardBreakOption = s.hardBreakOption
-        self.noSoftBreakOption = s.noSoftBreakOption
-        self.unsafeHTMLOption = s.unsafeHTMLOption
-        self.validateUTFOption = s.validateUTFOption
-        self.smartQuotesOption = s.smartQuotesOption
-        self.footnotesOption = s.footnotesOption
-        
-        self.baseFontSize = s.baseFontSize
-        self.customCSS = s.customCSS
-        self.customCSSCode = s.customCSSCode
-        self.customCSSOverride = s.customCSSOverride
-        
-        self.about = s.about
-        self.debug = s.debug
-        
-        self.openInlineLink = s.openInlineLink
-        
-        self.renderAsCode = s.renderAsCode
-        
-        self.qlWindowWidth = s.qlWindowWidth
-        self.qlWindowHeight = s.qlWindowHeight
-    }
-    
-    /**
-     * Update settings based on other settings provided from a UserDefaults dictionary.
-     */
-    func update(from defaultsDomain: [String: Any]) {
-        if let ext = defaultsDomain[Self.CodingKeys.tableExtension.rawValue] as? Bool {
-            tableExtension = ext
-        }
-        if let ext = defaultsDomain[Self.CodingKeys.autoLinkExtension.rawValue] as? Bool {
-            autoLinkExtension = ext
-        }
-        if let ext = defaultsDomain[Self.CodingKeys.tagFilterExtension.rawValue] as? Bool {
-            tagFilterExtension = ext
-        }
-        if let ext = defaultsDomain[Self.CodingKeys.taskListExtension.rawValue] as? Bool {
-            taskListExtension = ext
-        }
-        if let n = defaultsDomain[Self.CodingKeys.yamlExtension.rawValue] as? Int, let ext = YamlMode(rawValue: n) {
-            yamlExtension = ext
-        }
-        
-        if let n = defaultsDomain[Self.CodingKeys.strikethroughExtension.rawValue] as? Int, let ext = StrikethroughMode(rawValue: n) {
-            strikethroughExtension = ext
-        }
-        
-        if let ext = defaultsDomain[Self.CodingKeys.mathExtension.rawValue] as? [String: Any] {
-            mathExtension = JSExtension(from: ext) ?? .disabled
-        }
-        if let ext = defaultsDomain[Self.CodingKeys.mermaidExtension.rawValue] as? [String: Any] {
-            mermaidExtension = JSExtension(from: ext) ?? .disabled
-        }
-        if let ext = defaultsDomain[Self.CodingKeys.mentionExtension.rawValue] as? Bool {
-            mentionExtension = ext
-        }
-        if let ext = defaultsDomain[Self.CodingKeys.checkboxExtension.rawValue] as? Bool {
-            checkboxExtension = ext
-        }
-        if let ext = defaultsDomain[Self.CodingKeys.headsExtension.rawValue] as? Bool {
-            headsExtension = ext
-        }
-        
-        if let ext = defaultsDomain[Self.CodingKeys.hightlightExtension.rawValue] as? Bool {
-            highlightExtension = ext
-        }
-        
-        if let ext = defaultsDomain[Self.CodingKeys.syntaxHighlightExtension.rawValue] as? Bool {
-            syntaxHighlightExtension = ext
-        }
-        
-        if let characters = defaultsDomain[Self.CodingKeys.syntaxWordWrapOption.rawValue] as? Int {
-            syntaxWordWrapOption = characters
-        }
-        if let state = defaultsDomain[Self.CodingKeys.syntaxLineNumbersOption.rawValue] as? Bool {
-            syntaxLineNumbersOption = state
-        }
-        if let n = defaultsDomain[Self.CodingKeys.syntaxTabsOption.rawValue] as? Int {
-            syntaxTabsOption = n
-        }
-        
-        if let ext = defaultsDomain[Self.CodingKeys.subExtension.rawValue] as? Bool {
-            subExtension = ext
-        }
-        if let ext = defaultsDomain[Self.CodingKeys.subExtension.rawValue] as? Bool {
-            supExtension = ext
-        }
-        
-        if let n = defaultsDomain[Self.CodingKeys.emojiExtension.rawValue] as? Int, let ext = EmojiMode(rawValue: n) {
-            emojiExtension = ext
-        }
-        
-        if let ext = defaultsDomain[Self.CodingKeys.inlineImageExtension.rawValue] as? Bool {
-            inlineImageExtension = ext
-        }
-        
-        if let opt = defaultsDomain[Self.CodingKeys.hardBreakOption.rawValue] as? Bool {
-            hardBreakOption = opt
-        }
-        if let opt = defaultsDomain[Self.CodingKeys.noSoftBreakOption.rawValue] as? Bool {
-            noSoftBreakOption = opt
-        }
-        if let opt = defaultsDomain[Self.CodingKeys.unsafeHTMLOption.rawValue] as? Bool {
-            unsafeHTMLOption = opt
-        }
-        if let opt = defaultsDomain[Self.CodingKeys.validateUTFOption.rawValue] as? Bool {
-            validateUTFOption = opt
-        }
-        if let opt = defaultsDomain[Self.CodingKeys.smartQuotesOption.rawValue] as? Bool {
-            smartQuotesOption = opt
-        }
-        if let opt = defaultsDomain[Self.CodingKeys.footnotesOption.rawValue] as? Bool {
-            footnotesOption = opt
-        }
-        
-        
-        if let opt = defaultsDomain[Self.CodingKeys.baseFontSize.rawValue] as? CGFloat {
-            baseFontSize = opt
-        }
-        
-        if let opt = defaultsDomain[Self.CodingKeys.customCSS.rawValue] as? String, !opt.isEmpty {
-            if !opt.hasPrefix("/"), let path = Settings.stylesFolder{
-                customCSS = path.appendingPathComponent(opt)
-            } else {
-                customCSS = URL(fileURLWithPath: opt)
-            }
-        }
-        if let opt = defaultsDomain[Self.CodingKeys.customCSSOverride.rawValue] as? Bool {
-            customCSSOverride = opt
-        }
-        
-        if let opt = defaultsDomain[Self.CodingKeys.about.rawValue] as? Bool {
-            about = opt
-        }
-        
-        if let opt = defaultsDomain[Self.CodingKeys.debug.rawValue] as? Bool {
-            debug = opt
-        }
-        
-        if let opt = defaultsDomain[Self.CodingKeys.openInlineLink.rawValue] as? Bool {
-            openInlineLink = opt
-        }
-        if let opt = defaultsDomain[Self.CodingKeys.renderAsCode.rawValue] as? Bool {
-            renderAsCode = opt
-        }
-        if let opt = defaultsDomain[Self.CodingKeys.qlWindowWidth.rawValue] as? Int, opt > 0 {
-            qlWindowWidth = opt
-        } else {
-            qlWindowWidth = nil
-        }
-        if let opt = defaultsDomain[Self.CodingKeys.qlWindowHeight.rawValue] as? Int, opt > 0 {
-            qlWindowHeight = opt
-        } else {
-            qlWindowHeight = nil
-        }
-
-        sanitize()
-    }
-    
-    /**
-     * Reset the settings to the factory values.
-     */
-    func resetToFactory() {
-        let s = Settings()
-        update(from: s)
-    }
-    
-    func sanitize(allowLinkFile: Bool = false) {
-        var messages: [String] = []
-        sanitize(allowLinkFile: allowLinkFile, messages: &messages)
-        messages.forEach({ print($0) })
-    }
-    
-    /**
-     * Sanitize the settings.
-     * - parameters:
-     *   - allowLinkFile: allow to link local file for the JSExtension properties
-     *   - messages: Filled with a list of error messages.
-     */
-    func sanitize(allowLinkFile: Bool = false, messages: inout [String]) {
-        messages = []
-        
-        if baseFontSize < 0 {
-            self.baseFontSize = 0
-        }
-        
-        self.mathExtension.sanitize(cacheUrl: mathJaxFileUrl, cdnUrl: Self.mathJaxWebUrl, allowLinkFile: allowLinkFile)
-        self.mermaidExtension.sanitize(cacheUrl: mermaidFileUrl, cdnUrl: Self.mermaidWebUrl, allowLinkFile: allowLinkFile)
-        
-        if self.subExtension && self.strikethroughExtension == .single {
-            messages.append("The Sub extension is incompatibile with the Strikethrough extension when recognize a single tile (~).")
-        }
-        
-        if self.supExtension && self.footnotesOption {
-            messages.append("The Sup extension can cause corrupted output when the Footnotes option is set.")
-        }
     }
     
     /**

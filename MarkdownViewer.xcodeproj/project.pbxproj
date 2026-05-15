@@ -682,20 +682,14 @@
 			alwaysOutOfDate = 1;
 			name = "Run cmark-headers Makefile";
 			shellPath = /bin/sh;
-			shellScript = (
-				"unset ACTION; cd \"$SRCROOT/cmark-gfm\" && /usr/bin/make -f \"$SRCROOT/cmark-extra/Makefile\" VERBOSE=0",
-				"",
-			);
+			shellScript = "unset ACTION; cd \"$SRCROOT/cmark-gfm\" && /usr/bin/make -f \"$SRCROOT/cmark-extra/Makefile\" VERBOSE=0\n";
 		};
 		83AA02CC27A12F3100E86BC9 /* Run libpcre2 Makefile */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			name = "Run libpcre2 Makefile";
 			shellPath = /bin/sh;
-			shellScript = (
-				"cd \"$SRCROOT\" && /usr/bin/make -f ./dependencies/MakefilePCRE VERBOSE=0",
-				"",
-			);
+			shellScript = "cd \"$SRCROOT\" && /usr/bin/make -f ./dependencies/MakefilePCRE VERBOSE=0\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -965,7 +959,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = K7Z8YKVA8G;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -999,7 +993,7 @@
 					"$(BUILT_PRODUCTS_DIR)/libpcre2/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 0.0.6;
+				MARKETING_VERSION = 0.0.7;
 				PRODUCT_BUNDLE_IDENTIFIER = org.anarion.MarkdownViewer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1029,7 +1023,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = K7Z8YKVA8G;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -1063,7 +1057,7 @@
 					"$(BUILT_PRODUCTS_DIR)/libpcre2/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 0.0.6;
+				MARKETING_VERSION = 0.0.7;
 				PRODUCT_BUNDLE_IDENTIFIER = org.anarion.MarkdownViewer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

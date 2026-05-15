@@ -713,19 +713,6 @@ table.debug td {
     
     
     /**
-     * Embed a JS library.
-     * - parameters:
-     *  - mode:
-     *  - fileUrl: Path (local file or web uRL) of the library, from the cache folder or the main bundle.
-     *  - cdnUrl:Web url from download the library. Tipically from a CDN service.
-     *  - extraTagLink: Extra code to put in the `<script>` tag when the library is linked.
-     *  - extraTagEmbed: Extra code to put in the `<script>` tag when the library is embedded.
-     */
-    internal func embedJsLibrary(mode: JSExtension, fileUrl: URL?, cdnUrl: URL, extraTagLink: String = "", extraTagEmbed: String = "") -> String {
-        return mode.getScriptCode(extraTagLink: extraTagLink, extraTagEmbed: extraTagEmbed)
-    }
-    
-    /**
      * Build a complete html file.
      * - parameters:
      *  - title: Title of the page.
