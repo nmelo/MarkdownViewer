@@ -64,31 +64,6 @@ jobs:
           sudo xcode-select -switch "$(ls -d /Applications/Xcode*.app | sort -V | tail -1)"
           xcodebuild -version
 
-      - name: Compute native-lib cache key
-        id: cachekeys
-        # Both Makefiles (cmark-extra, highlight-wrapper) declare static-lib
-        # targets with no prerequisites — so make skips the rebuild if the
-        # .a files already exist on disk. Cache the products dir to short-
-        # circuit both. Key on submodule SHAs + Xcode version so SDK/clang
-        # bumps and submodule updates invalidate.
-        run: |
-          set -euo pipefail
-          CMARK_SHA=$(git -C cmark-gfm rev-parse HEAD)
-          HL_SHA=$(git -C highlight-wrapper/highlight rev-parse HEAD)
-          XCODE_VER=$(xcodebuild -version | head -1 | awk '{print $2}')
-          KEY="nativelibs-${{ runner.os }}-xc${XCODE_VER}-${CMARK_SHA}-${HL_SHA}"
-          echo "nativelibs_key=$KEY" >> "$GITHUB_OUTPUT"
-          echo "Cache key: $KEY"
-
-      - name: Cache native-lib build outputs
-        uses: actions/cache@v5
-        with:
-          # We pin xcodebuild's derivedDataPath to /tmp/dd in the archive
-          # step, so the .a files land here predictably.
-          path: |
-            /tmp/dd/Build/Products/Release
-          key: ${{ steps.cachekeys.outputs.nativelibs_key }}
-
       - name: Downgrade project format for runner Xcode
         # The runner's Xcode lags behind the local one. Rewrite objectVersion
         # in the runner's checkout only — local file stays at 100.
