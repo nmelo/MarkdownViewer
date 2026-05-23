@@ -58,27 +58,17 @@ jobs:
           sudo xcode-select -switch "$(ls -d /Applications/Xcode*.app | sort -V | tail -1)"
           xcodebuild -version
 
-      - name: Downgrade project format for runner Xcode if needed
-        # The runner image's Xcode may lag behind the local one. If the project
-        # was saved with a newer objectVersion than this Xcode understands,
-        # rewrite it in the runner's checkout only. Affects no committed files.
+      - name: Downgrade project format for runner Xcode
+        # The runner's Xcode lags behind the local one. Rewrite objectVersion
+        # in the runner's checkout only — local file stays at 100.
+        # 77 (Xcode 16) is broadly compatible and reads fine in newer Xcode.
         run: |
           set -euo pipefail
-          XCODE_MAJOR=$(xcodebuild -version | head -1 | awk '{print $2}' | cut -d. -f1)
-          XCODE_MINOR=$(xcodebuild -version | head -1 | awk '{print $2}' | cut -d. -f2)
           CURRENT=$(grep -m1 'objectVersion = ' MarkdownViewer.xcodeproj/project.pbxproj | sed -E 's/.*= ([0-9]+);.*/\1/')
-          echo "Xcode ${XCODE_MAJOR}.${XCODE_MINOR}, project objectVersion=${CURRENT}"
-          # objectVersion 100 requires Xcode 26.4+. If we're on something older, drop to 77 (Xcode 16+).
-          if [ "$CURRENT" -ge 100 ]; then
-            # Detect if this Xcode handles 100 by doing a no-op xcodebuild -list
-            if xcodebuild -project MarkdownViewer.xcodeproj -list >/dev/null 2>&1; then
-              echo "Xcode reads format ${CURRENT} fine — no downgrade needed"
-            else
-              echo "Downgrading objectVersion ${CURRENT} → 77 for CI build"
-              /usr/bin/sed -i.bak "s/objectVersion = ${CURRENT};/objectVersion = 77;/" MarkdownViewer.xcodeproj/project.pbxproj
-              rm MarkdownViewer.xcodeproj/project.pbxproj.bak
-            fi
-          fi
+          echo "Project objectVersion=${CURRENT} → rewriting to 77 for CI"
+          /usr/bin/sed -i.bak "s/objectVersion = ${CURRENT};/objectVersion = 77;/" MarkdownViewer.xcodeproj/project.pbxproj
+          rm MarkdownViewer.xcodeproj/project.pbxproj.bak
+          grep -m1 'objectVersion = ' MarkdownViewer.xcodeproj/project.pbxproj
 
       - name: Import Developer ID certificate
         env:
