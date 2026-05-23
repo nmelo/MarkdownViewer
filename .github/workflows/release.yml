@@ -26,12 +26,9 @@ jobs:
     runs-on: macos-15
     env:
       VERSION: ${{ github.ref_name }}
-      # Run JS-based actions on Node 24 (silences the Node 20 deprecation
-      # warning emitted starting late 2025).
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
       - name: Checkout (with submodules)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: recursive
           fetch-depth: 0
@@ -82,7 +79,7 @@ jobs:
           echo "Cache key: $KEY"
 
       - name: Cache native-lib build outputs
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           # We pin xcodebuild's derivedDataPath to /tmp/dd in the archive
           # step, so the .a files land here predictably.
