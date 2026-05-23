@@ -155,16 +155,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private func openNewWindow() -> Owner {
         let initialSize = NSSize(width: 900, height: 700)
         let vc = ViewController()
-        let v = vc.view
-        v.frame = NSRect(origin: .zero, size: initialSize)
         let window = NSWindow(
             contentRect: NSRect(origin: .zero, size: initialSize),
             styleMask: [.titled, .closable, .miniaturizable, .resizable],
             backing: .buffered,
             defer: false
         )
-        window.contentView = v
-        // Assigning contentView can shrink the window to AL-intrinsic size of
+        // contentViewController (not contentView) so the VC sits in the window's
+        // responder chain — required for menu actions like toggleTOC(_:) that
+        // live on the split-view controller, above the content child VC.
+        window.contentViewController = vc
+        // Assigning the content can shrink the window to AL-intrinsic size of
         // any subview that uses Auto Layout (the FindBar does). Force the
         // intended content size back.
         window.setContentSize(initialSize)
@@ -365,6 +366,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                                   keyEquivalent: "w")
         wideItem.keyEquivalentModifierMask = [.command, .shift]
         viewMenu.addItem(wideItem)
+
+        viewMenu.addItem(.separator())
+        // ⌃⌘S matches AppKit's standard "Show/Hide Sidebar" shortcut.
+        let tocToggle = NSMenuItem(title: "Show Table of Contents",
+                                   action: #selector(ViewController.toggleTOC(_:)),
+                                   keyEquivalent: "s")
+        tocToggle.keyEquivalentModifierMask = [.command, .control]
+        viewMenu.addItem(tocToggle)
+
+        let tocPos = NSMenuItem(title: "Move Sidebar to Right",
+                                action: #selector(ViewController.toggleTOCPosition(_:)),
+                                keyEquivalent: "")
+        viewMenu.addItem(tocPos)
 
         // Window menu
         let windowItem = NSMenuItem()
@@ -567,6 +581,7 @@ enum HelpPanel {
             <tr><td class="key"><kbd>⌘</kbd> <kbd>0</kbd></td><td>Actual size</td></tr>
             <tr><td class="key">pinch</td><td>Zoom (trackpad)</td></tr>
             <tr><td class="key"><kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>W</kbd></td><td>Toggle wide / max-width</td></tr>
+            <tr><td class="key"><kbd>⌃</kbd> <kbd>⌘</kbd> <kbd>S</kbd></td><td>Show/hide table of contents</td></tr>
           </table>
 
           <h2>Help</h2>

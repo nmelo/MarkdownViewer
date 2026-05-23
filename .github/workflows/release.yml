@@ -1,0 +1,197 @@
+# Release pipeline.
+#
+# Trigger: push a tag matching `v*` (e.g. `v0.0.12`).
+#
+# Required repo secrets:
+#   MACOS_CERT_P12_BASE64   — base64 of Developer ID Application .p12 (cert + key)
+#   MACOS_CERT_PASSWORD     — password chosen when exporting the .p12
+#   KEYCHAIN_PASSWORD       — any random string; throwaway, used only inside this job
+#   NOTARYTOOL_APPLE_ID     — Apple ID email
+#   NOTARYTOOL_PASSWORD     — app-specific password from appleid.apple.com
+#   NOTARYTOOL_TEAM_ID      — K7Z8YKVA8G
+#   SPARKLE_ED_PRIVATE_KEY  — base64 Ed25519 private key (the string Sparkle stores in Keychain)
+
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-15
+    env:
+      VERSION: ${{ github.ref_name }}
+    steps:
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Verify tag matches MARKETING_VERSION
+        run: |
+          set -euo pipefail
+          SHORT="${VERSION#v}"
+          PROJECT_VERSION=$(grep -m1 'MARKETING_VERSION = ' MarkdownViewer.xcodeproj/project.pbxproj \
+            | sed -E 's/.*= ([^;]+);.*/\1/')
+          if [ "$SHORT" != "$PROJECT_VERSION" ]; then
+            echo "Tag is $SHORT but project MARKETING_VERSION is $PROJECT_VERSION"
+            exit 1
+          fi
+          BUILD=$(grep -m1 'CURRENT_PROJECT_VERSION = ' MarkdownViewer.xcodeproj/project.pbxproj \
+            | sed -E 's/.*= ([^;]+);.*/\1/')
+          {
+            echo "version=$SHORT"
+            echo "build=$BUILD"
+          } >> "$GITHUB_ENV"
+
+      - name: Install build prereqs
+        run: brew install cmake
+
+      - name: Select Xcode
+        run: |
+          sudo xcode-select -switch "$(ls -d /Applications/Xcode*.app | sort -V | tail -1)"
+          xcodebuild -version
+
+      - name: Import Developer ID certificate
+        env:
+          CERT_BASE64: ${{ secrets.MACOS_CERT_P12_BASE64 }}
+          CERT_PASSWORD: ${{ secrets.MACOS_CERT_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          set -euo pipefail
+          KEYCHAIN="$RUNNER_TEMP/build.keychain-db"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security list-keychains -d user -s "$KEYCHAIN" $(security list-keychains -d user | tr -d '"')
+          echo "$CERT_BASE64" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+          security import "$RUNNER_TEMP/cert.p12" -k "$KEYCHAIN" -P "$CERT_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          rm "$RUNNER_TEMP/cert.p12"
+          security find-identity -p codesigning -v
+
+      - name: Archive (Release)
+        run: |
+          set -euo pipefail
+          xcodebuild archive \
+            -project MarkdownViewer.xcodeproj \
+            -scheme MarkdownViewer \
+            -configuration Release \
+            -archivePath "$RUNNER_TEMP/MarkdownViewer.xcarchive" \
+            -destination 'generic/platform=macOS' \
+            DEVELOPMENT_TEAM=K7Z8YKVA8G
+
+      - name: Export signed .app
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/exportOptions.plist" <<'PLIST'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>method</key><string>developer-id</string>
+              <key>teamID</key><string>K7Z8YKVA8G</string>
+              <key>signingStyle</key><string>automatic</string>
+          </dict>
+          </plist>
+          PLIST
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/MarkdownViewer.xcarchive" \
+            -exportPath "$RUNNER_TEMP/export" \
+            -exportOptionsPlist "$RUNNER_TEMP/exportOptions.plist"
+
+      - name: Zip for notarization
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/export"
+          /usr/bin/ditto -c -k --keepParent MarkdownViewer.app "$RUNNER_TEMP/MarkdownViewer-${VERSION}.zip"
+
+      - name: Notarize
+        env:
+          APPLE_ID: ${{ secrets.NOTARYTOOL_APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.NOTARYTOOL_PASSWORD }}
+          TEAM_ID: ${{ secrets.NOTARYTOOL_TEAM_ID }}
+        run: |
+          set -euo pipefail
+          xcrun notarytool submit "$RUNNER_TEMP/MarkdownViewer-${VERSION}.zip" \
+            --apple-id "$APPLE_ID" \
+            --password "$APPLE_PASSWORD" \
+            --team-id "$TEAM_ID" \
+            --wait
+
+      - name: Staple
+        run: |
+          set -euo pipefail
+          xcrun stapler staple "$RUNNER_TEMP/export/MarkdownViewer.app"
+          xcrun stapler validate "$RUNNER_TEMP/export/MarkdownViewer.app"
+
+      - name: Re-zip stapled .app
+        run: |
+          set -euo pipefail
+          rm -f "$RUNNER_TEMP/MarkdownViewer-${VERSION}.zip"
+          cd "$RUNNER_TEMP/export"
+          /usr/bin/ditto -c -k --keepParent MarkdownViewer.app "$RUNNER_TEMP/MarkdownViewer-${VERSION}.zip"
+
+      - name: Sparkle sign_update
+        id: sparkle
+        env:
+          SPARKLE_KEY: ${{ secrets.SPARKLE_ED_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          SIGN_UPDATE=$(find "$HOME/Library/Developer/Xcode/DerivedData" \
+            -path '*/Sparkle/bin/sign_update' -type f 2>/dev/null | head -1)
+          if [ -z "$SIGN_UPDATE" ]; then
+            echo "sign_update not found in DerivedData"; exit 1
+          fi
+          echo "Found sign_update at $SIGN_UPDATE"
+          KEYFILE="$RUNNER_TEMP/sparkle.key"
+          printf '%s' "$SPARKLE_KEY" > "$KEYFILE"
+          OUT=$("$SIGN_UPDATE" -f "$KEYFILE" "$RUNNER_TEMP/MarkdownViewer-${VERSION}.zip")
+          rm "$KEYFILE"
+          echo "sign_update: $OUT"
+          SIG=$(echo "$OUT" | sed -nE 's/.*sparkle:edSignature="([^"]+)".*/\1/p')
+          LEN=$(echo "$OUT" | sed -nE 's/.*length="([0-9]+)".*/\1/p')
+          if [ -z "$SIG" ] || [ -z "$LEN" ]; then
+            echo "Could not parse signature/length from sign_update output"
+            exit 1
+          fi
+          {
+            echo "signature=$SIG"
+            echo "length=$LEN"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Update appcast.xml on main
+        env:
+          SIG: ${{ steps.sparkle.outputs.signature }}
+          LEN: ${{ steps.sparkle.outputs.length }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          git checkout main
+          git pull --rebase origin main
+          python3 Scripts/update-appcast.py "$version" "$build" "$SIG" "$LEN"
+          git add appcast.xml
+          if git diff --cached --quiet; then
+            echo "appcast already up to date — nothing to commit"
+          else
+            git commit -m "appcast: ${VERSION}"
+            git push origin main
+          fi
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          gh release create "$VERSION" \
+            --title "$VERSION" \
+            --generate-notes \
+            "$RUNNER_TEMP/MarkdownViewer-${VERSION}.zip"

@@ -949,7 +949,7 @@ MathJax = {
     /**
      * Transform mermaid code blocks from `<pre...><code class="language-mermaid">...</code></pre>` to `<div class="mermaid">...</div>`.
      */
-    private func transformMermaidBlocks(_ html: String) -> String {
+    internal func transformMermaidBlocks(_ html: String) -> String {
         // Match <pre...><code...class="...language-mermaid..."...>...</code></pre>
         // We need to handle potential attributes and whitespace variations
         let pattern = #"<pre[^>]*>\s*<code[^>]*class="[^"]*language-mermaid[^"]*"[^>]*>([\s\S]*?)</code>\s*</pre>"#
