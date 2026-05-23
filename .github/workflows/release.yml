@@ -26,6 +26,9 @@ jobs:
     runs-on: macos-15
     env:
       VERSION: ${{ github.ref_name }}
+      # Run JS-based actions on Node 24 (silences the Node 20 deprecation
+      # warning emitted starting late 2025).
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
       - name: Checkout (with submodules)
         uses: actions/checkout@v4
@@ -51,7 +54,11 @@ jobs:
           } >> "$GITHUB_ENV"
 
       - name: Install build prereqs
-        run: brew install cmake
+        # Runner images ship cmake; only install if absent so we don't get
+        # the "already installed and up-to-date" warning every run.
+        run: |
+          brew list cmake >/dev/null 2>&1 || brew install cmake
+          cmake --version | head -1
 
       - name: Select Xcode
         run: |
