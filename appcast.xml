@@ -6,6 +6,24 @@
         <description>Standalone macOS markdown viewer with live file reload.</description>
         <language>en</language>
         <item>
+            <title>Version 0.0.12</title>
+            <link>https://github.com/nmelo/MarkdownViewer/releases/tag/v0.0.12</link>
+            <sparkle:version>12</sparkle:version>
+            <sparkle:shortVersionString>0.0.12</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>11.0</sparkle:minimumSystemVersion>
+            <pubDate>Sat, 23 May 2026 15:37:03 +0000</pubDate>
+            <description><![CDATA[
+                <p>See <a href="https://github.com/nmelo/MarkdownViewer/releases/tag/v0.0.12">release notes</a>.</p>
+            ]]></description>
+            <enclosure
+                url="https://github.com/nmelo/MarkdownViewer/releases/download/v0.0.12/MarkdownViewer-v0.0.12.zip"
+                sparkle:version="12"
+                sparkle:shortVersionString="0.0.12"
+                sparkle:edSignature="zhlljBES+bsFGmM9suB5G+12X4QQOovi5vVjLh+zpq+5h6pEumJN+7uCewCnJzH2qvEjCGr3xeD760RFsNOFAw=="
+                length="7667262"
+                type="application/octet-stream" />
+        </item>
+        <item>
             <title>Version 0.0.11</title>
             <link>https://github.com/nmelo/MarkdownViewer/releases/tag/v0.0.11</link>
             <sparkle:version>11</sparkle:version>
