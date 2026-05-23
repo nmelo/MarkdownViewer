@@ -186,10 +186,29 @@ jobs:
           SPARKLE_KEY: ${{ secrets.SPARKLE_ED_PRIVATE_KEY }}
         run: |
           set -euo pipefail
-          SIGN_UPDATE=$(find /tmp/dd "$HOME/Library/Developer/Xcode/DerivedData" \
-            -path '*/Sparkle/bin/sign_update' -type f 2>/dev/null | head -1)
-          if [ -z "$SIGN_UPDATE" ]; then
-            echo "sign_update not found in DerivedData"; exit 1
+          # Sparkle's SPM artifact lands under SourcePackages somewhere — exact
+          # path depends on the runner's caching. Search every plausible
+          # location and bail with a useful diagnostic if nothing matches.
+          SEARCH_ROOTS=(
+            /tmp/dd
+            "$HOME/Library/Developer/Xcode/DerivedData"
+            /Users/runner/Library/Developer/Xcode/DerivedData
+          )
+          for root in "${SEARCH_ROOTS[@]}"; do
+            [ -d "$root" ] || continue
+            echo "Searching $root for sign_update..."
+            CANDIDATE=$(find "$root" -name sign_update -type f 2>/dev/null | head -1)
+            if [ -n "$CANDIDATE" ]; then
+              SIGN_UPDATE="$CANDIDATE"
+              break
+            fi
+          done
+          if [ -z "${SIGN_UPDATE:-}" ]; then
+            echo "sign_update not found. Top-level dirs of /tmp/dd:"
+            ls -la /tmp/dd 2>&1 || true
+            echo "Top-level dirs of \$HOME/Library/Developer/Xcode/DerivedData:"
+            ls -la "$HOME/Library/Developer/Xcode/DerivedData" 2>&1 || true
+            exit 1
           fi
           echo "Found sign_update at $SIGN_UPDATE"
           KEYFILE="$RUNNER_TEMP/sparkle.key"
