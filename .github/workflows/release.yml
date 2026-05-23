@@ -58,6 +58,31 @@ jobs:
           sudo xcode-select -switch "$(ls -d /Applications/Xcode*.app | sort -V | tail -1)"
           xcodebuild -version
 
+      - name: Compute native-lib cache key
+        id: cachekeys
+        # Both Makefiles (cmark-extra, highlight-wrapper) declare static-lib
+        # targets with no prerequisites — so make skips the rebuild if the
+        # .a files already exist on disk. Cache the products dir to short-
+        # circuit both. Key on submodule SHAs + Xcode version so SDK/clang
+        # bumps and submodule updates invalidate.
+        run: |
+          set -euo pipefail
+          CMARK_SHA=$(git -C cmark-gfm rev-parse HEAD)
+          HL_SHA=$(git -C highlight-wrapper/highlight rev-parse HEAD)
+          XCODE_VER=$(xcodebuild -version | head -1 | awk '{print $2}')
+          KEY="nativelibs-${{ runner.os }}-xc${XCODE_VER}-${CMARK_SHA}-${HL_SHA}"
+          echo "nativelibs_key=$KEY" >> "$GITHUB_OUTPUT"
+          echo "Cache key: $KEY"
+
+      - name: Cache native-lib build outputs
+        uses: actions/cache@v4
+        with:
+          # We pin xcodebuild's derivedDataPath to /tmp/dd in the archive
+          # step, so the .a files land here predictably.
+          path: |
+            /tmp/dd/Build/Products/Release
+          key: ${{ steps.cachekeys.outputs.nativelibs_key }}
+
       - name: Downgrade project format for runner Xcode
         # The runner's Xcode lags behind the local one. Rewrite objectVersion
         # in the runner's checkout only — local file stays at 100.
@@ -96,6 +121,7 @@ jobs:
             -scheme MarkdownViewer \
             -configuration Release \
             -archivePath "$RUNNER_TEMP/MarkdownViewer.xcarchive" \
+            -derivedDataPath /tmp/dd \
             -destination 'generic/platform=macOS' \
             DEVELOPMENT_TEAM=K7Z8YKVA8G
 
@@ -156,7 +182,7 @@ jobs:
           SPARKLE_KEY: ${{ secrets.SPARKLE_ED_PRIVATE_KEY }}
         run: |
           set -euo pipefail
-          SIGN_UPDATE=$(find "$HOME/Library/Developer/Xcode/DerivedData" \
+          SIGN_UPDATE=$(find /tmp/dd "$HOME/Library/Developer/Xcode/DerivedData" \
             -path '*/Sparkle/bin/sign_update' -type f 2>/dev/null | head -1)
           if [ -z "$SIGN_UPDATE" ]; then
             echo "sign_update not found in DerivedData"; exit 1
@@ -184,6 +210,11 @@ jobs:
           LEN: ${{ steps.sparkle.outputs.length }}
         run: |
           set -euo pipefail
+          # Discard the runner-only objectVersion downgrade and any submodule
+          # build dirt before switching branches — pull --rebase needs a
+          # clean working tree.
+          git checkout -- .
+          git submodule foreach --recursive 'git reset --hard 2>/dev/null && git clean -fdx 2>/dev/null || true' || true
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git fetch origin main
