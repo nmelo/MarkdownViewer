@@ -33,22 +33,24 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
-      - name: Verify tag matches MARKETING_VERSION
+      - name: Derive version + build number from tag
+        # Tag is the source of truth. Build number = X*10000 + Y*100 + Z so
+        # it's strictly monotonic across 0.0.x → 0.1.0 → 1.0.0 (Sparkle
+        # requires monotonic increase). xcodebuild overrides keep pbxproj
+        # untouched between releases.
         run: |
           set -euo pipefail
           SHORT="${VERSION#v}"
-          PROJECT_VERSION=$(grep -m1 'MARKETING_VERSION = ' MarkdownViewer.xcodeproj/project.pbxproj \
-            | sed -E 's/.*= ([^;]+);.*/\1/')
-          if [ "$SHORT" != "$PROJECT_VERSION" ]; then
-            echo "Tag is $SHORT but project MARKETING_VERSION is $PROJECT_VERSION"
+          if ! [[ "$SHORT" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Tag '$VERSION' isn't a vX.Y.Z semver — refusing to release"
             exit 1
           fi
-          BUILD=$(grep -m1 'CURRENT_PROJECT_VERSION = ' MarkdownViewer.xcodeproj/project.pbxproj \
-            | sed -E 's/.*= ([^;]+);.*/\1/')
+          BUILD=$(echo "$SHORT" | awk -F. '{print $1*10000 + $2*100 + $3}')
           {
             echo "version=$SHORT"
             echo "build=$BUILD"
           } >> "$GITHUB_ENV"
+          echo "Will build MARKETING_VERSION=$SHORT, CURRENT_PROJECT_VERSION=$BUILD"
 
       - name: Install build prereqs
         # Runner images ship cmake; only install if absent so we don't get
@@ -127,7 +129,9 @@ jobs:
             -archivePath "$RUNNER_TEMP/MarkdownViewer.xcarchive" \
             -derivedDataPath /tmp/dd \
             -destination 'generic/platform=macOS' \
-            DEVELOPMENT_TEAM=K7Z8YKVA8G
+            DEVELOPMENT_TEAM=K7Z8YKVA8G \
+            MARKETING_VERSION="$version" \
+            CURRENT_PROJECT_VERSION="$build"
 
       - name: Export signed .app
         run: |
