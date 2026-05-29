@@ -342,7 +342,12 @@ class Settings: Codable {
 
     /// Show debug infomations.
     var debug: Bool = false
-    
+
+    /// Number of source lines in the most recently rendered markdown text.
+    /// Populated by `render(text:...)`, read by `getCompleteHTML` to size
+    /// the line-number gutter. Transient (not persisted).
+    var lastSourceLineCount: Int = 0
+
     lazy fileprivate(set) var resourceBundle: Bundle = {
         return Self.getResourceBundle()
     }()

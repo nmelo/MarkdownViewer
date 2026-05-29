@@ -29,6 +29,7 @@ class ViewController: NSSplitViewController {
 
     static let tocVisibleKey = "TOCVisible"
     static let tocOnRightKey = "TOCOnRight"
+    static let lineNumbersVisibleKey = "LineNumbersVisible"
 
     static var tocVisible: Bool {
         get { (UserDefaults.standard.object(forKey: tocVisibleKey) as? Bool) ?? true }
@@ -37,6 +38,10 @@ class ViewController: NSSplitViewController {
     static var tocOnRight: Bool {
         get { UserDefaults.standard.bool(forKey: tocOnRightKey) }
         set { UserDefaults.standard.set(newValue, forKey: tocOnRightKey) }
+    }
+    static var lineNumbersVisible: Bool {
+        get { UserDefaults.standard.bool(forKey: lineNumbersVisibleKey) }
+        set { UserDefaults.standard.set(newValue, forKey: lineNumbersVisibleKey) }
     }
 
     let contentVC = ContentViewController()
@@ -109,6 +114,7 @@ class ViewController: NSSplitViewController {
         // Skip our own broadcast — we already updated locally.
         if let sender = note.object as? ViewController, sender === self { return }
         arrangeSplit(animated: true)
+        contentVC.applyLineNumberVisibility()
     }
 
     private static func broadcastTOCSettingsChange(from sender: ViewController) {
@@ -135,6 +141,7 @@ class ViewController: NSSplitViewController {
     @objc func zoomOut(_ sender: Any?)      { contentVC.zoomOut(sender) }
     @objc func zoomReset(_ sender: Any?)    { contentVC.zoomReset(sender) }
     @objc func toggleWide(_ sender: Any?)   { contentVC.toggleWide(sender) }
+    @objc func goToLine(_ sender: Any?)     { contentVC.goToLine(sender) }
 
     // MARK: - TOC menu actions
 
@@ -150,6 +157,12 @@ class ViewController: NSSplitViewController {
         ViewController.broadcastTOCSettingsChange(from: self)
     }
 
+    @objc func toggleLineNumbers(_ sender: Any?) {
+        ViewController.lineNumbersVisible.toggle()
+        contentVC.applyLineNumberVisibility()
+        ViewController.broadcastTOCSettingsChange(from: self)
+    }
+
     // NSMenuItemValidation — called by AppKit before showing the menu.
     // (NSSplitViewController's superclasses don't declare this, so no `override`.)
     @objc func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
@@ -160,6 +173,12 @@ class ViewController: NSSplitViewController {
         case #selector(toggleTOCPosition(_:)):
             menuItem.title = ViewController.tocOnRight ? "Move Sidebar to Left" : "Move Sidebar to Right"
             return true
+        case #selector(toggleLineNumbers(_:)):
+            menuItem.title = ViewController.lineNumbersVisible ? "Hide Line Numbers" : "Show Line Numbers"
+            return true
+        case #selector(goToLine(_:)):
+            // Disabled when no doc is loaded.
+            return markdownFile != nil
         default:
             return true
         }
@@ -355,6 +374,149 @@ final class ContentViewController: NSViewController {
         """)
     }
 
+    // MARK: - Line numbers + Go-to-Line
+
+    /// Toggles the `.show-line-numbers` class on `<body>` to match the
+    /// global setting, and rebuilds the gutter element when the class is on.
+    /// Removes the gutter element when off so we don't carry stale spans.
+    /// The gutter sits in `<body>` (not `<article>`) so it stays pinned to
+    /// the viewport's left edge rather than the centered article's edge.
+    func applyLineNumberVisibility() {
+        let on = ViewController.lineNumbersVisible
+        webView.evaluateJavaScript("""
+        (function(){
+            const body = document.body;
+            if (!body) return;
+            body.classList.toggle('show-line-numbers', \(on ? "true" : "false"));
+            if (\(on ? "true" : "false")) {
+                \(ContentViewController.gutterBuildJS)
+            } else {
+                const g = document.querySelector('.line-gutter');
+                if (g) g.remove();
+            }
+        })();
+        """)
+    }
+
+    /// JS that (re)builds the line-number gutter inside `<article>`. Removes
+    /// the old gutter if present, then walks every top-level block with
+    /// `data-sourcepos`, interpolates y-positions for blank source lines
+    /// between blocks, and emits one absolutely-positioned `<span class="ln">`
+    /// per source line up to `article.dataset.sourceLines`.
+    fileprivate static let gutterBuildJS: String = """
+    (function(){
+        const article = document.querySelector('article');
+        if (!article) return;
+        const old = document.querySelector('.line-gutter');
+        if (old) old.remove();
+        const total = parseInt(article.dataset.sourceLines || '0', 10);
+        if (total <= 0) return;
+
+        // Collect top-level blocks with parsable sourcepos. y-coordinates
+        // are in document space (getBoundingClientRect + scrollY) so they
+        // align with a body-level absolutely-positioned gutter.
+        const sel = ':scope > :is(p,h1,h2,h3,h4,h5,h6,ul,ol,blockquote,pre,table,hr,dl)[data-sourcepos]';
+        const sy = window.scrollY;
+        const blocks = [];
+        article.querySelectorAll(sel).forEach(el => {
+            const m = el.getAttribute('data-sourcepos').match(/^(\\d+):\\d+-(\\d+):/);
+            if (!m) return;
+            const r = el.getBoundingClientRect();
+            blocks.push({
+                start: +m[1],
+                end: +m[2],
+                top: r.top + sy,
+                bottom: r.bottom + sy
+            });
+        });
+        if (blocks.length === 0) return;
+
+        // For each source line 1..total, compute a y-coordinate in document space.
+        function yFor(line) {
+            let containing = null, prev = null, next = null;
+            for (const b of blocks) {
+                if (b.end < line) { prev = b; continue; }
+                if (b.start <= line && b.end >= line) { containing = b; break; }
+                if (b.start > line) { next = b; break; }
+            }
+            if (containing) {
+                const span = containing.end - containing.start + 1;
+                const t = (line - containing.start + 0.5) / span;
+                return containing.top + t * (containing.bottom - containing.top);
+            }
+            if (prev && next) {
+                const gap = next.start - prev.end - 1;
+                const t = (line - prev.end - 0.5) / Math.max(gap, 1);
+                return prev.bottom + t * (next.top - prev.bottom);
+            }
+            const ref = next || prev;
+            if (!ref) return 0;
+            const lh = 18; // fallback line height (px)
+            return next ? (next.top - (next.start - line) * lh)
+                        : (prev.bottom + (line - prev.end) * lh);
+        }
+
+        const gutter = document.createElement('div');
+        gutter.className = 'line-gutter';
+        // Stretch the gutter to the full document height so its border draws
+        // top to bottom even though its span children are absolute-positioned.
+        gutter.style.height = document.documentElement.scrollHeight + 'px';
+        for (let i = 1; i <= total; i++) {
+            const span = document.createElement('span');
+            span.className = 'ln';
+            span.style.top = yFor(i) + 'px';
+            span.textContent = i;
+            gutter.appendChild(span);
+        }
+        document.body.appendChild(gutter);
+    })();
+    """
+
+    /// Prompts for a source line number in a sheet, then scrolls to it.
+    @objc func goToLine(_ sender: Any?) {
+        guard markdownFile != nil,
+              let window = view.window,
+              window.attachedSheet == nil else { return }
+        let alert = NSAlert()
+        alert.messageText = "Go to Line"
+        alert.informativeText = "Enter a source line number."
+        let tf = NSTextField(frame: NSRect(x: 0, y: 0, width: 220, height: 24))
+        tf.placeholderString = "1"
+        alert.accessoryView = tf
+        alert.addButton(withTitle: "Go")
+        alert.addButton(withTitle: "Cancel")
+        // Make Enter fire Go and start typing in the text field immediately.
+        alert.window.initialFirstResponder = tf
+        alert.beginSheetModal(for: window) { [weak self] response in
+            guard response == .alertFirstButtonReturn else { return }
+            let n = max(1, Int(tf.stringValue.trimmingCharacters(in: .whitespaces)) ?? 0)
+            self?.scrollToSourceLine(n)
+        }
+    }
+
+    /// Scrolls to the top-level block whose `data-sourcepos` range contains
+    /// the given source line. Falls back to the last block (silent clamp)
+    /// if `line` is past EOF. No-op on a document without `data-sourcepos`.
+    func scrollToSourceLine(_ line: Int) {
+        webView.evaluateJavaScript("""
+        (function(line){
+            const sel = 'article > :is(p,h1,h2,h3,h4,h5,h6,ul,ol,blockquote,pre,table,hr,dl)[data-sourcepos]';
+            const blocks = document.querySelectorAll(sel);
+            let containing = null, last = null;
+            for (const el of blocks) {
+                const m = el.getAttribute('data-sourcepos').match(/^(\\d+):\\d+-(\\d+):/);
+                if (!m) continue;
+                const s = +m[1], e = +m[2];
+                last = el;
+                if (line >= s && line <= e) { containing = el; break; }
+                if (s > line) break;
+            }
+            const target = containing || last;
+            if (target) target.scrollIntoView({behavior: 'smooth', block: 'start'});
+        })(\(line));
+        """)
+    }
+
     // MARK: - Rendering
 
     private func updateWindowTitle() {
@@ -449,10 +611,14 @@ final class ContentViewController: NSViewController {
             : body
 
         let bodyLiteral = ContentViewController.jsStringLiteral(processed)
+        let sourceLines = settings.lastSourceLineCount
         let js = """
         (function(){
             const article = document.querySelector('article');
             if (!article) return false;
+            // Refresh the source-line count so the gutter resizes if the
+            // file grew or shrank since the last render.
+            article.dataset.sourceLines = '\(sourceLines)';
             // Parse the new markup as a DocumentFragment, then swap children.
             const wideClass = article.classList.contains('wide');
             const range = document.createRange();
@@ -477,6 +643,9 @@ final class ContentViewController: NSViewController {
             if (result as? Bool) == true {
                 // Refresh the TOC from the freshly-swapped article.
                 self.webView.evaluateJavaScript(ContentViewController.tocExtractorJS)
+                // Defensive: re-sync the gutter visibility in case the
+                // setting changed between full-load and now.
+                self.applyLineNumberVisibility()
             } else {
                 // No <article> on the page — page got replaced from under us.
                 // Reload everything from scratch.
@@ -644,6 +813,8 @@ extension ContentViewController: WKNavigationDelegate, WKScriptMessageHandler {
         // use the in-place article swap to avoid flicker.
         loadedDocumentFile = markdownFile
         webView.evaluateJavaScript(ContentViewController.tocExtractorJS)
+        applyLineNumberVisibility()
+
     }
 
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {

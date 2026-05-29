@@ -346,6 +346,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         findPrev.keyEquivalentModifierMask = [.command, .shift]
         findSub.addItem(findPrev)
 
+        editMenu.addItem(.separator())
+        editMenu.addItem(withTitle: "Go to Line…",
+                         action: #selector(ViewController.goToLine(_:)),
+                         keyEquivalent: "l")
+
         // View menu
         let viewItem = NSMenuItem()
         mainMenu.addItem(viewItem)
@@ -366,6 +371,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                                   keyEquivalent: "w")
         wideItem.keyEquivalentModifierMask = [.command, .shift]
         viewMenu.addItem(wideItem)
+
+        let lineNumbers = NSMenuItem(title: "Show Line Numbers",
+                                     action: #selector(ViewController.toggleLineNumbers(_:)),
+                                     keyEquivalent: "")
+        viewMenu.addItem(lineNumbers)
 
         viewMenu.addItem(.separator())
         // ⌃⌘S matches AppKit's standard "Show/Hide Sidebar" shortcut.
@@ -571,6 +581,7 @@ enum HelpPanel {
             <tr><td class="key"><kbd>⌘</kbd> <kbd>F</kbd></td><td>Find in page</td></tr>
             <tr><td class="key"><kbd>⌘</kbd> <kbd>G</kbd></td><td>Find next</td></tr>
             <tr><td class="key"><kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>G</kbd></td><td>Find previous</td></tr>
+            <tr><td class="key"><kbd>⌘</kbd> <kbd>L</kbd></td><td>Go to line…</td></tr>
             <tr><td class="key"><kbd>esc</kbd></td><td>Dismiss find bar</td></tr>
           </table>
 

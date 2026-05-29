@@ -70,14 +70,21 @@ extension Settings {
      *   - baseDir: Path to the folder containing the source file. Used to manage relative paths within the code.
      */
     func render(text: String, filename: String, forAppearance appearance: Appearance, baseDir: String) throws -> String {
+        // Track source line count so the HTML wrapper can render a gutter
+        // with one row per source line, blanks included.
+        self.lastSourceLineCount = text.reduce(0) { $1 == "\n" ? $0 + 1 : $0 } + 1
+
         if self.renderAsCode, let code = self.renderAsSourceCode(text: text, forAppearance: appearance, baseDir: baseDir) {
             return code
         }
-        
+
         cmark_gfm_core_extensions_ensure_registered()
         cmark_gfm_extra_extensions_ensure_registered()
         
         var options = CMARK_OPT_DEFAULT
+        // Emit data-sourcepos="L:C-L:C" on every block — fuels the line-number
+        // gutter and Cmd+L "Go to Line" navigation. Costs ~10–15% HTML size.
+        options |= CMARK_OPT_SOURCEPOS
         if self.unsafeHTMLOption {
             options |= CMARK_OPT_UNSAFE
         }
@@ -443,11 +450,29 @@ extension Settings {
             defer {
                 free(html2)
             }
-            
-            return html_debug + header + String(cString: html2) + about
+            let body = String(cString: html2)
+            return html_debug + header + addLineAttributes(body) + about
         } else {
             return html_debug + "<p>RENDER FAILED!</p>"
         }
+    }
+
+    /// Copy the source line number out of `data-sourcepos="L:C-L:C"` into a
+    /// sibling `data-line="L"` attribute on the same element. The CSS gutter
+    /// styles `attr(data-line)` directly, so this single pass lets us avoid
+    /// any JS post-processing. Idempotent — running twice does nothing extra.
+    internal func addLineAttributes(_ html: String) -> String {
+        let pattern = #"data-sourcepos="(\d+):"#
+        guard let regex = try? NSRegularExpression(pattern: pattern, options: []) else {
+            return html
+        }
+        let range = NSRange(html.startIndex..., in: html)
+        return regex.stringByReplacingMatches(
+            in: html,
+            options: [],
+            range: range,
+            withTemplate: #"data-line="$1" data-sourcepos="$1:"#
+        )
     }
     
     /**
@@ -879,7 +904,8 @@ MathJax = {
         }
 
         let style = css_doc + css_highlight + css_doc_extended
-        let wrapper_open = self.renderAsCode ? "<pre class='hl'>" : "<article class='markdown-body'>"
+        let articleAttrs = "class='markdown-body' data-source-lines='\(self.lastSourceLineCount)'"
+        let wrapper_open = self.renderAsCode ? "<pre class='hl'>" : "<article \(articleAttrs)>"
         let wrapper_close = self.renderAsCode ? "</pre>" : "</article>"
         let body_style = self.renderAsCode ? " class='hl'" : ""
         let html =

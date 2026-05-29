@@ -669,3 +669,45 @@ input[type="checkbox"] {
         background-color: transparent;
     }
 }
+
+/*
+ * Source-line gutter (View → Show Line Numbers).
+ *
+ * The gutter lives directly under `<body>` (NOT inside `<article>`) and is
+ * absolutely positioned against the viewport's left edge, so it stays
+ * flush with the window border regardless of the article's centered
+ * layout. JS computes each number's y-coordinate in document space and
+ * sets `top` on the span. `padding-left` on body keeps the article's
+ * content from overlapping the gutter on narrow windows.
+ */
+body.show-line-numbers {
+    --mdv-gutter-w: 3.5em;
+    padding-left: var(--mdv-gutter-w);
+}
+
+.line-gutter {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 3.5em;
+    border-right: 1px solid rgba(0, 0, 0, 0.10);
+    pointer-events: none;
+    user-select: none;
+}
+
+.line-gutter .ln {
+    position: absolute;
+    left: 0.6em;
+    font: 11px/1 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    color: rgba(0, 0, 0, 0.45);
+    white-space: nowrap;
+}
+
+@media (prefers-color-scheme: dark) {
+    .line-gutter {
+        border-right-color: rgba(255, 255, 255, 0.10);
+    }
+    .line-gutter .ln {
+        color: rgba(255, 255, 255, 0.42);
+    }
+}
