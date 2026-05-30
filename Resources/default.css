@@ -1,713 +1,554 @@
-:root {
-  /* Base Light */
-  --textPrimary: #24292E;
-  --background: #ffffff;
-  --body-border-color: #dfdfdf;
-  --link: #0366d6;
-  --link-highlight: rgba(3, 102, 214, 0.08);
-  --strong: #1f6feb;
-  --inline-code: #8a6d3b;
-  --code-background: #f7f7f9;
-  --hr-background: #e3e4e8;
-  --thead-background: #f7f7f9;
-  --thead-border: #e3e4e8;
-  --tr-border: #bfc1c9; /* unused variable */
-  --tr-alt-background: #f7f7f9;
-  --kbd-background: #f7f7f9;
-  --kbd-color: #4b4d58;
-  --kbd-border: #d6d7dc;
-  --blockquote-color: #6a6d7c;
-  --blockquote-border: #e3e4e8;
-  --heading-color: #17181a;
-  --header-bottom-border: #e3e4e8;
-  --h6-color: #6a6d7c;
-  --frame-border: #e3e4e8;
-  --frame-color: #242528;
-  --mention-color: #242528;
-  --email-toggle-color: #4b4d58; /* unused variable */
-  --email-toggle-background: #e3e4e8; /* unused variable */
-  --email-quoted-color: #6a6d7c; /* unused variable */
-  --keyword-color: #9194a1;
-  --code-font: ui-monospace, Menlo, monospace;
-  
-  /* Highlight Light */
-  --hl_Background: #F6F8FA ;
-  --hl_Number: #005cc5 ;
-  --hl_Escape: #032f62 ;
-  --hl_String: #032f62 ;
-  --hl_String_Pre_Processor: #549ef1 ;
-  --hl_Block_Comment: #6a737d ;
-  --hl_Line_Comment: #6a737d ;
-  --hl_Pre_Processor: #d73a49 ; /* #include */
-  --hl_Line_Number:  #52565C ;
-  --hl_Operator: #032f62 ; /* +,-,(){} */
-  --hl_Interpolation:  #79c0ff ;
-  --hl_Keyword-1: #d73a49 ; /* import | func */
-  --hl_Keyword-2: #d73a49 ; /* int | str */
-  --hl_Keyword-3: #24292e ; /* ??? */
-  --hl_Keyword-4: #6f42c1 ; /* ??? */
-  --hl_Keyword-5: #d73a49 ; /* ??? */
-  --hl_Keyword-6: #d73a49 ; /* ??? */
-}
+/* =========================================================================
+   MarkdownViewer — default.css  ·  "Ink" (editorial, dark-first)
+   Drop-in replacement for Resources/default.css.
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* Base Dark */
-  --textPrimary: #c9d1d9;
-  --background: #0d1117;
-  --body-border-color: #31363C;
-  --link: #58a6ff;
-  --link-highlight: rgba(3, 102, 214, 0.08);
-  --strong: #79c0ff;
-  --inline-code: #d4a72c;
-  --code-background: #2f3438;
-  --hr-background: #30363d;
-  --thead-background: #f7f7f9;
-  --thead-border: #3b434b;
-  --tr-border: #3b434b; /* unused variable */
-  --tr-alt-background: #161c23;
-  --kbd-background: #f7f7f9;
-  --kbd-color: #4b4d58;
-  --kbd-border: #050505;
-  --blockquote-color: #8b949e;
-  --blockquote-border: #3D434A;
-  --heading-color: #17181a;
-  --header-bottom-border: #21272c;
-  --h6-color: #6a6d7c;
-  --frame-border: #ff08d6;
-  --frame-color: #242528;
-  --mention-color: #242528;
-  --email-toggle-color: #4b4d58;
-  --email-toggle-background: #e3e4e8;
-  --email-quoted-color: #6a6d7c;
-  --keyword-color: #9194a1;
-  --code-font: ui-monospace, Menlo, monospace;
+   Built from two layers:
+     1. base.css      — theme-agnostic structure (tokenized)
+     2. theme-ink.css — the Ink palette + type tokens (dark + light)
 
-  /* Highlight Dark */
-  --hl_Background: #161b22 ;
-  --hl_Number: #79c0ff ;
-  --hl_Escape: #a5d6ff ;
-  --hl_String: #549ef1 ;
-  --hl_String_Pre_Processor: #549ef1 ;
-  --hl_Block_Comment: #8b949e ;
-  --hl_Line_Comment: #8b949e ;
-  --hl_Pre_Processor: #FF7B72 ; /* #include */
-  --hl_Line_Number:  #52565C ;
-  --hl_Operator: #79c0ff ; /* +,-,(){} */
-  --hl_Interpolation:  #79c0ff ;
-  --hl_Keyword-1: #FF7B72 ; /* import | func */
-  --hl_Keyword-2: #FF7B72 ; /* int | str */
-  --hl_Keyword-3: #c9d1d9 ; /* ??? */
-  --hl_Keyword-4: #eea8ff ; /* ??? */
-  --hl_Keyword-5: #FF7B72 ; /* ??? */
-  --hl_Keyword-6: #FF7B72 ; /* ??? */
-  }
-}
+   Headings: serif (Newsreader), near-white, a whisper of teal on H1/H2.
+   Bold reads as weight, not color. Hairline tables, quiet callouts,
+   refined code + Mermaid, comfortable reading measure.
+   ========================================================================= */
 
-/*Syntax Highlight*/
-pre.hl	{ background-color: var(--hl_Background);}
-.hl.num { color: var(--hl_Number); font-weight: normal;}
-.hl.esc { color: var(--hl_Escape); font-weight: normal;}
-.hl.str { color: var(--hl_String); font-weight: normal;}
-.hl.pps { color: var(--hl_String_Pre_Processor); font-weight: normal;}
-.hl.com { color: var(--hl_Block_Comment); font-weight: normal;}
-.hl.slc { color: var(--hl_Line_Comment); font-weight: normal;}
-.hl.ppc { color: var(--hl_Pre_Processor); font-weight: normal;}
-.hl.lin { color: var(--hl_Line_Number); font-weight: normal;}
-.hl.opt { color: var(--hl_Operator); font-weight: normal;}
-.hl.ipl { color: var(--hl_Interpolation); font-weight: normal;}
-.hl.kwa { color: var(--hl_Keyword-1); font-weight: normal;}
-.hl.kwb { color: var(--hl_Keyword-2); font-weight: normal;}
-.hl.kwc { color: var(--hl_Keyword-3); font-weight: normal;}
-.hl.kwd { color: var(--hl_Keyword-4); font-weight: normal;}
-.hl.kwe { color: var(--hl_Keyword-5); font-weight: normal;}
-.hl.kwf { color: var(--hl_Keyword-6); font-weight: normal;}
+/* Newsreader for headings; Georgia is the fallback if offline / not installed. */
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,560;0,6..72,600;1,6..72,400;1,6..72,500&display=swap');
 
+/* ============================ LAYER 1 — base ============================ */
+/* =========================================================================
+   MarkdownViewer — base.css
+   Theme-agnostic structure. All color / type / scale comes from CSS custom
+   properties set by a theme file (theme-ink.css, theme-paper.css, …).
+   Drop-in replacement scaffold for Resources/default.css.
+   ========================================================================= */
 
-pre {
-  max-width: 902px;
-}
-* {
-  box-sizing: border-box;
-}
+:root { color-scheme: dark light; }
 
-input:disabled {
-  touch-action: none;
-}
+* { box-sizing: border-box; }
 
 html {
   padding: 0;
   margin: 0;
   -webkit-text-size-adjust: none;
   text-size-adjust: none;
-  font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji, Segoe UI Emoji;
+  font-family: var(--font-body);
 }
 
 body {
   margin: 0;
-  /* padding: 1rem; */
-  color: var(--textPrimary);
-  background-color: var(--background);
+  color: var(--fg);
+  background-color: var(--bg);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 article {
-  margin: auto;
-  max-width: 902px;
-  font-size: inherit;
-  line-height: 1.5;
+  margin: 0 auto;
+  max-width: var(--measure);
+  padding: var(--pad-y) var(--pad-x);
+  font-size: var(--body-size);
+  line-height: var(--leading);
   word-wrap: break-word;
-  padding: 32px;
+  letter-spacing: var(--body-tracking, normal);
 }
+article.wide { max-width: none; }
 
-article.wide {
-  max-width: none;
-}
+.markdown-body > :first-child { margin-top: 0 !important; }
+.markdown-body > :last-child  { margin-bottom: 0 !important; }
+.markdown-body:after { display: table; content: ""; clear: both; }
 
+/* ---- Links --------------------------------------------------------------- */
 a {
-  color: var(--link);
+  color: var(--accent);
   text-decoration: none;
-  -webkit-tap-highlight-color: var(--link-highlight);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  text-decoration-color: color-mix(in oklab, var(--accent) 38%, transparent);
+  -webkit-tap-highlight-color: transparent;
+  transition: color .12s ease;
 }
+a:hover { text-decoration: underline; color: var(--accent-bright, var(--accent)); }
+.markdown-body a:not([href]) { color: inherit; text-decoration: none; }
 
-a:hover {
-  text-decoration: underline;
-}
-
-details summary {
-  outline: 0;
-}
-
-table {
-  border-spacing: 0;
-  border-collapse: collapse;
-}
-
-blockquote {
-  margin: 0;
-}
-
-table, table *, pre {
-  touch-action: pan-x;
-}
-
-.markdown-body ul.contains-task-list {
-  list-style: none;
-  padding-left: 0;
-}
-
-pre, code, kbd {
-  font-size: 1rem;
-  font-family: var(--code-font);
-}
-
-.issue-keyword {
-  border-bottom: 1px dotted var(--keyword-color);
-}
-
-.team-mention, .user-mention {
-  font-weight: 600;
-  color: var(--mention-color);
-  white-space: nowrap;
-}
-
-.email-hidden-toggle, .email-hidden-reply {
-  display: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  input[type="checkbox"] {
-    filter: invert(85%) brightness(1.5);
-  }
-}
-/* Fix checkboxes looking cut off when they render larger than the default size */
-input[type="checkbox"] {
-  transform: translate(0px);
-  width: 14px; height: 14px;
-}
-
-
-.markdown-body kbd {
-  display: inline-block;
-  padding: 0.18rem 0.31rem;
-  font-size: 0.7rem;
-  line-height: 1.2rem;
-  color: var(--kbd-color);
-  vertical-align: middle;
-  background-color: var(--kbd-background);
-  border: 1px solid var(--kbd-border);
-  border-radius: 0.25rem;
-  box-shadow: inset 0 -1px 0 var(--kbd-border);
-  margin-right: 2px;
-}
-
-.markdown-body:after, .markdown-body:before {
-  display: table;
-  content: ""
-}
-
-.markdown-body:after {
-  clear: both;
-}
-
-.markdown-body > :first-child {
-  margin-top: 0 !important;
-}
-
-.markdown-body > :last-child {
-  margin-bottom: 0 !important;
-}
-
-.markdown-body a:not([href]) {
-  color: inherit;
-  text-decoration: none;
-}
-
-.markdown-body .absent {
-  color: var(--red-600);
-}
-
-.markdown-body .anchor {
-  float: left;
-  padding-right: 4px;
-  margin-left: -20px;
-  line-height: 1;
-}
-
-.markdown-body .anchor:focus {
-  outline: none;
-}
-
-.markdown-body blockquote, .markdown-body details, .markdown-body dl, .markdown-body ol, .markdown-body p, .markdown-body pre, .markdown-body table, .markdown-body ul {
+/* ---- Paragraphs & flow --------------------------------------------------- */
+.markdown-body p,
+.markdown-body blockquote,
+.markdown-body details,
+.markdown-body dl,
+.markdown-body ol,
+.markdown-body ul,
+.markdown-body pre,
+.markdown-body table {
   margin-top: 0;
-  margin-bottom: 16px;
+  margin-bottom: var(--block-gap);
 }
+.markdown-body table table { margin-bottom: 0; }
 
-.markdown-body table table {
-    margin-bottom: 0;
+/* ---- Headings ------------------------------------------------------------ */
+.markdown-body :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-head);
+  color: var(--fg-strong);
+  font-weight: var(--head-weight, 600);
+  line-height: var(--head-leading, 1.2);
+  letter-spacing: var(--head-tracking, -0.011em);
+  margin-top: var(--head-mt, 2em);
+  margin-bottom: var(--head-mb, .65em);
+  text-wrap: balance;
 }
-
-.markdown-body hr {
-  height: .25rem;
-  padding: 0;
-  margin: 24px 0;
-  background-color: var(--hr-background);
-  border: 0;
-}
-
-.markdown-body blockquote {
-  padding-left: 1rem;
-  color: var(--blockquote-color);
-  border-left: .25rem solid var(--blockquote-border);
-}
-
-.markdown-body blockquote > :first-child {
-  margin-top: 0;
-}
-
-.markdown-body blockquote > :last-child {
-  margin-bottom: 0;
-}
-
-.markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4, .markdown-body h5, .markdown-body h6 {
-  margin-top: 24px;
-  margin-bottom: 16px;
-  font-weight: 600;
-  line-height: 1.25;
-  color: var(--link);
-}
-
-.markdown-body h1 .octicon-link, .markdown-body h2 .octicon-link, .markdown-body h3 .octicon-link, .markdown-body h4 .octicon-link, .markdown-body h5 .octicon-link, .markdown-body h6 .octicon-link {
-  color: var(--heading-color);
-  vertical-align: middle;
-  visibility: hidden;
-}
-
-.markdown-body h1:hover .anchor, .markdown-body h2:hover .anchor, .markdown-body h3:hover .anchor, .markdown-body h4:hover .anchor, .markdown-body h5:hover .anchor, .markdown-body h6:hover .anchor {
-  text-decoration: none;
-}
-
-.markdown-body h1:hover .anchor .octicon-link, .markdown-body h2:hover .anchor .octicon-link, .markdown-body h3:hover .anchor .octicon-link, .markdown-body h4:hover .anchor .octicon-link, .markdown-body h5:hover .anchor .octicon-link, .markdown-body h6:hover .anchor .octicon-link {
-  visibility: visible;
-}
-
-.markdown-body h1 code, .markdown-body h1 tt, .markdown-body h2 code, .markdown-body h2 tt, .markdown-body h3 code, .markdown-body h3 tt, .markdown-body h4 code, .markdown-body h4 tt, .markdown-body h5 code, .markdown-body h5 tt, .markdown-body h6 code, .markdown-body h6 tt {
-  font-size: inherit;
-}
+.markdown-body :is(h1, h2, h3, h4, h5, h6) code { font-size: inherit; }
 
 .markdown-body h1 {
-  font-size: 2rem;
-}
-
-.markdown-body h1, .markdown-body h2 {
-  padding-bottom: .3rem;
-  border-bottom: 1px solid var(--header-bottom-border);
-}
-
-.markdown-body h2 {
-  font-size: 1.5rem;
-}
-
-.markdown-body h3 {
-  font-size: 1.25rem;
-}
-
-.markdown-body h4 {
-  font-size: 1rem;
-}
-
-.markdown-body h5 {
-  font-size: .875rem;
-}
-
-.markdown-body h6 {
-  font-size: .85rem;
-  color: var(--h6-color);
-}
-
-.markdown-body ol, .markdown-body ul {
-  padding-left: 1.5rem;
-}
-
-.markdown-body ol.no-list, .markdown-body ul.no-list {
-  padding: 0;
-  list-style-type: none;
-}
-
-.markdown-body ol ol, .markdown-body ol ul, .markdown-body ul ol, .markdown-body ul ul {
+  font-size: var(--h1-size, 2.3rem);
+  font-weight: var(--h1-weight, var(--head-weight, 600));
+  color: var(--h1-color, var(--fg-strong));
+  letter-spacing: var(--h1-tracking, -0.018em);
   margin-top: 0;
-  margin-bottom: 0;
+  padding-bottom: var(--h1-pad, .35em);
+  border-bottom: var(--rule-w, 1px) solid var(--rule);
 }
-
-.markdown-body li {
-  word-wrap: break-all;
+.markdown-body h2 {
+  font-size: var(--h2-size, 1.62rem);
+  padding-bottom: var(--h2-pad, .3em);
+  border-bottom: var(--rule-w, 1px) solid var(--rule);
+  color: var(--h2-color, var(--fg-strong));
 }
-
-.markdown-body li > p {
-  margin-top: 16px;
-}
-
-.markdown-body li + li {
-  margin-top: .25rem;
-}
-
-.markdown-body dl {
-  padding: 0;
-}
-
-.markdown-body dl dt {
-  padding: 0;
-  margin-top: 16px;
-  font-size: 1rem;
-  font-style: italic;
+.markdown-body h3 { font-size: var(--h3-size, 1.3rem); color: var(--h3-color, var(--fg-strong)); }
+.markdown-body h4 { font-size: var(--h4-size, 1.08rem); }
+.markdown-body h5 { font-size: var(--h5-size, .95rem); letter-spacing: .02em; }
+.markdown-body h6 {
+  font-size: var(--h6-size, .82rem);
+  color: var(--fg-faint);
   font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
 }
 
-.markdown-body dl dd {
-  padding: 0 16px;
-  margin-bottom: 16px;
+/* Heading anchor (octicon) — keep invisible/unobtrusive */
+.markdown-body .anchor { float: left; padding-right: 4px; margin-left: -20px; line-height: 1; }
+.markdown-body .anchor:focus { outline: none; }
+.markdown-body :is(h1,h2,h3,h4,h5,h6) .octicon-link { visibility: hidden; color: var(--fg-faint); }
+.markdown-body :is(h1,h2,h3,h4,h5,h6):hover .anchor .octicon-link { visibility: visible; }
+
+/* ---- Strong / emphasis --------------------------------------------------- */
+.markdown-body strong, .markdown-body b {
+  color: var(--strong-color, inherit);
+  font-weight: var(--strong-weight, 700);
+}
+.markdown-body em, .markdown-body i { color: inherit; }
+.markdown-body mark {
+  padding: .06em .28em;
+  border-radius: 3px;
+  background-color: var(--mark-bg);
+  color: var(--mark-fg, inherit);
+}
+.markdown-body del { color: var(--fg-faint); }
+.markdown-body sup, .markdown-body sub { font-size: .72em; line-height: 0; }
+.markdown-body sup a { color: var(--accent); text-decoration: none; }
+
+/* ---- Lists --------------------------------------------------------------- */
+.markdown-body ol, .markdown-body ul { padding-left: 1.4em; }
+.markdown-body li { margin: 0; }
+.markdown-body li + li { margin-top: var(--li-gap, .3em); }
+.markdown-body li > p { margin-top: var(--block-gap); }
+.markdown-body ol ol, .markdown-body ol ul,
+.markdown-body ul ol, .markdown-body ul ul { margin-top: var(--li-gap, .3em); margin-bottom: 0; }
+.markdown-body li::marker { color: var(--marker-color, var(--fg-faint)); }
+.markdown-body ol.no-list, .markdown-body ul.no-list { padding: 0; list-style: none; }
+
+/* Task lists */
+.markdown-body ul.contains-task-list { list-style: none; padding-left: .1em; }
+.markdown-body .contains-task-list .contains-task-list { padding-left: 1.4em; }
+.markdown-body li.task-list-item { display: flex; align-items: baseline; gap: .6em; }
+.markdown-body li.task-list-item::marker { content: ""; }
+.markdown-body input[type="checkbox"] {
+  appearance: none; -webkit-appearance: none;
+  flex: 0 0 auto;
+  width: 1.05em; height: 1.05em;
+  margin: 0;
+  transform: translateY(.16em);
+  border: 1.5px solid var(--checkbox-border);
+  border-radius: 5px;
+  background: var(--checkbox-bg, transparent);
+  position: relative;
+  transition: background .12s ease, border-color .12s ease;
+}
+.markdown-body input[type="checkbox"]:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.markdown-body input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  left: 50%; top: 46%;
+  width: .3em; height: .58em;
+  border: solid var(--checkbox-check, #fff);
+  border-width: 0 2px 2px 0;
+  transform: translate(-50%, -55%) rotate(45deg);
 }
 
+/* Definition lists */
+.markdown-body dl { padding: 0; }
+.markdown-body dl dt { margin-top: var(--block-gap); font-weight: 600; font-style: italic; }
+.markdown-body dl dd { padding: 0 0 0 1em; margin-bottom: var(--block-gap); }
+
+/* ---- Blockquote / callout ------------------------------------------------ */
+.markdown-body blockquote {
+  margin: 0 0 var(--block-gap);
+  padding: var(--bq-pad, .2em 0 .2em 1.15em);
+  color: var(--bq-fg, var(--fg-muted));
+  border-left: var(--bq-rule-w, 3px) solid var(--bq-rule, var(--accent));
+  background: var(--bq-bg, transparent);
+  border-radius: var(--bq-radius, 0);
+  font-style: var(--bq-style, normal);
+}
+.markdown-body blockquote > :first-child { margin-top: 0; }
+.markdown-body blockquote > :last-child  { margin-bottom: 0; }
+.markdown-body blockquote strong, .markdown-body blockquote b { color: var(--bq-strong, var(--fg-strong)); }
+
+/* ---- Horizontal rule ----------------------------------------------------- */
+.markdown-body hr {
+  height: 0;
+  padding: 0;
+  margin: var(--hr-margin, 2.4em) 0;
+  border: 0;
+  border-top: 1px solid var(--rule);
+}
+
+/* ---- Tables -------------------------------------------------------------- */
 .markdown-body table {
   display: block;
   width: 100%;
-  overflow: auto;
+  overflow-x: auto;
+  border-spacing: 0;
+  border-collapse: collapse;
+  font-size: var(--table-size, .96em);
 }
-
+.markdown-body table thead { border-bottom: 2px solid var(--rule-strong); }
 .markdown-body table th {
   font-weight: 600;
+  color: var(--fg-strong);
+  text-align: left;
+  letter-spacing: .01em;
 }
-
-.markdown-body table td, .markdown-body table th {
-  padding: 6px 13px;
-  border: 1px solid var(--thead-border);
+.markdown-body table th, .markdown-body table td {
+  padding: var(--cell-pad, .62em .95em);
+  border: none;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
 }
+.markdown-body table tr { background-color: transparent; }
+.markdown-body table tbody tr:nth-child(2n) { background-color: var(--zebra); }
+.markdown-body table tbody tr:hover { background-color: var(--row-hover, var(--zebra)); }
+.markdown-body table img { background-color: initial; }
 
-.markdown-body table tr {
-  background-color: var(--background);
-  border-top: 1px solid var(--tr-border); /* unused variable */
-}
+/* ---- Images -------------------------------------------------------------- */
+.markdown-body img { max-width: 100%; height: auto; border-radius: var(--img-radius, 6px); background-color: initial; }
+.markdown-body img.emoji { max-width: 1.1em; vertical-align: -0.12em; border-radius: 0; }
 
-.markdown-body table tr:nth-child(2n) {
-  background-color: var(--tr-alt-background);
-}
-
-.markdown-body table img {
-  background-color: initial;
-}
-
-.markdown-body img {
-  max-width: 100%;
-  height: auto;
-  box-sizing: initial;
-  background-color: var(--background);
-}
-
-.markdown-body img[align=right] {
-  padding-left: 20px;
-}
-
-.markdown-body img[align=left] {
-  padding-right: 20px;
-}
-
-.markdown-body .emoji {
-  max-width: none;
-  vertical-align: text-top;
-  background-color: initial;
-}
-
-.markdown-body img.emoji {
-    max-width: 18px;
-}
-
-.markdown-body span.frame {
-  display: block;
-  overflow: hidden;
-}
-
-.markdown-body span.frame > span {
-  display: block;
-  float: left;
-  width: auto;
-  padding: 7px;
-  margin: 13px 0 0;
-  overflow: hidden;
-  border: 1px solid var(--frame-border);
-}
-
-.markdown-body span.frame span img {
-  display: block;
-  float: left;
-}
-
-.markdown-body span.frame span span {
-  display: block;
-  padding: 5px 0 0;
-  clear: both;
-  color: var(--frame-color);
-}
-
-.markdown-body span.align-center {
-  display: block;
-  overflow: hidden;
-  clear: both;
-}
-
-.markdown-body span.align-center > span {
-  display: block;
-  margin: 13px auto 0;
-  overflow: hidden;
-  text-align: center;
-}
-
-.markdown-body span.align-center span img {
-  margin: 0 auto;
-  text-align: center;
-}
-
-.markdown-body span.align-right {
-  display: block;
-  overflow: hidden;
-  clear: both;
-}
-
-.markdown-body span.align-right > span {
-  display: block;
-  margin: 13px 0 0;
-  overflow: hidden;
-  text-align: right;
-}
-
-.markdown-body span.align-right span img {
-  margin: 0;
-  text-align: right;
-}
-
-.markdown-body span.float-left {
-  display: block;
-  float: left;
-  margin-right: 13px;
-  overflow: hidden;
-}
-
-.markdown-body span.float-left span {
-  margin: 13px 0 0;
-}
-
-.markdown-body span.float-right {
-  display: block;
-  float: right;
-  margin-left: 13px;
-  overflow: hidden;
-}
-
-.markdown-body span.float-right > span {
-  display: block;
-  margin: 13px auto 0;
-  overflow: hidden;
-  text-align: right;
-}
-
+/* ---- Inline code & kbd --------------------------------------------------- */
 .markdown-body code, .markdown-body tt {
-  padding: .2rem .4rem;
+  font-family: var(--font-mono);
+  font-size: var(--code-inline-size, .88em);
+  padding: .12em .4em;
   margin: 0;
-  font-size: 85%;
-  background-color: var(--code-background);
-  color: var(--inline-code);
-  border-radius: 6px;
+  background-color: var(--code-bg);
+  color: var(--code-fg);
+  border: var(--code-border-w, 0) solid var(--code-border, transparent);
+  border-radius: 5px;
+}
+.markdown-body :is(h1,h2,h3,h4,h5,h6) code { background: var(--code-bg); }
+.markdown-body kbd {
+  display: inline-block;
+  padding: .18em .5em;
+  font-family: var(--font-mono);
+  font-size: .8em;
+  line-height: 1.2;
+  color: var(--kbd-fg);
+  background-color: var(--kbd-bg);
+  border: 1px solid var(--kbd-border);
+  border-radius: 5px;
+  box-shadow: inset 0 -1.5px 0 var(--kbd-border);
 }
 
-.markdown-body strong, .markdown-body b {
-  color: var(--strong);
-}
-
-.markdown-body code br, .markdown-body tt br {
-  display: none;
-}
-
-.markdown-body del code {
-  text-decoration: inherit;
-}
-
-.markdown-body pre {
-  word-wrap: normal;
-}
-
-.markdown-body pre > code {
-  padding: 0;
-  margin: 0;
-  font-size: 100%;
-  word-break: normal;
-  white-space: pre;
-  background: transparent;
-  border: 0;
-}
-
-.markdown-body .highlight {
-  margin-bottom: 16px;
-}
-
-.markdown-body .highlight pre {
-  margin-bottom: 0;
-  word-break: normal;
-}
-
-.markdown-body .highlight pre, .markdown-body pre {
-  padding: 16px;
+/* ---- Code blocks --------------------------------------------------------- */
+.markdown-body pre, .markdown-body .highlight pre, pre.hl {
+  padding: var(--pre-pad, 1em 1.15em);
   overflow: auto;
-  font-size: 85%;
-  line-height: 1.45;
+  font-family: var(--font-mono);
+  font-size: var(--code-block-size, .86em);
+  line-height: var(--code-leading, 1.6);
   background-color: var(--hl_Background);
-  border-radius: 6px;
-}
-
-.markdown-body pre code, .markdown-body pre tt {
-  display: inline;
-  max-width: auto;
-  padding: 0;
-  margin: 0;
-  overflow: visible;
-  line-height: inherit;
+  border: 1px solid var(--pre-border, var(--rule));
+  border-radius: var(--pre-radius, 9px);
   word-wrap: normal;
-  background-color: initial;
+}
+.markdown-body .highlight { margin-bottom: var(--block-gap); }
+.markdown-body .highlight pre { margin-bottom: 0; }
+.markdown-body pre > code, .markdown-body pre tt {
+  display: inline;
+  padding: 0; margin: 0;
+  font-size: 100%;
+  line-height: inherit;
+  white-space: pre;
+  word-break: normal;
+  background: transparent;
   color: inherit;
   border: 0;
 }
+.markdown-body code br, .markdown-body tt br { display: none; }
+.markdown-body del code { text-decoration: inherit; }
+pre { max-width: 100%; }
 
-.markdown-body .csv-data td, .markdown-body .csv-data th {
-  padding: 5px;
-  overflow: hidden;
-  font-size: 12px;
-  line-height: 1;
-  text-align: left;
-  white-space: nowrap;
-}
+/* Mentions */
+.team-mention, .user-mention { font-weight: 600; color: var(--accent); white-space: nowrap; }
+.issue-keyword { border-bottom: 1px dotted var(--fg-faint); }
+.email-hidden-toggle, .email-hidden-reply { display: none; }
 
-.markdown-body .csv-data .blob-num {
-  padding: 10px 8px 9px;
-  text-align: right;
-  background: var(--background);
-  border: 0;
-}
+/* =========================================================================
+   Syntax highlighting (highlight.cpp token classes)
+   ========================================================================= */
+pre.hl { background-color: var(--hl_Background); }
+.hl.num { color: var(--hl_Number); }
+.hl.esc { color: var(--hl_Escape); }
+.hl.str { color: var(--hl_String); }
+.hl.pps { color: var(--hl_String_Pre_Processor); }
+.hl.com { color: var(--hl_Block_Comment); font-style: italic; }
+.hl.slc { color: var(--hl_Line_Comment); font-style: italic; }
+.hl.ppc { color: var(--hl_Pre_Processor); }
+.hl.lin { color: var(--hl_Line_Number); }
+.hl.opt { color: var(--hl_Operator); }
+.hl.ipl { color: var(--hl_Interpolation); }
+.hl.kwa { color: var(--hl_Keyword-1); font-weight: 600; }
+.hl.kwb { color: var(--hl_Keyword-2); }
+.hl.kwc { color: var(--hl_Keyword-3); }
+.hl.kwd { color: var(--hl_Keyword-4); }
+.hl.kwe { color: var(--hl_Keyword-5); }
+.hl.kwf { color: var(--hl_Keyword-6); }
 
-.markdown-body .csv-data tr {
-  border-top: 0;
-}
+/* Mermaid */
+.mermaid { text-align: center; margin: var(--block-gap) 0; background: transparent; }
+.mermaid svg { max-width: 100%; height: auto; }
 
-.markdown-body .csv-data th {
-  font-weight: 600;
-  background: var(--thead-background);
-  border-top: 0;
-}
-
-.markdown-body mark {
-    padding: .2rem;
-    background-color: #fcf1b5;
-}
-
-@media (prefers-color-scheme: dark) {
-    .markdown-body mark {
-        padding: .2rem;
-        background-color: #fcf8e3;
-    }
-}
-
-/* Mermaid diagrams */
-.mermaid {
-    text-align: center;
-    margin: 16px 0;
-    background-color: transparent;
-}
-
-.mermaid svg {
-    max-width: 100%;
-    height: auto;
-}
-
-@media (prefers-color-scheme: dark) {
-    .mermaid {
-        background-color: transparent;
-    }
-}
-
-/*
- * Source-line gutter (View → Show Line Numbers).
- *
- * The gutter lives directly under `<body>` (NOT inside `<article>`) and is
- * absolutely positioned against the viewport's left edge, so it stays
- * flush with the window border regardless of the article's centered
- * layout. JS computes each number's y-coordinate in document space and
- * sets `top` on the span. `padding-left` on body keeps the article's
- * content from overlapping the gutter on narrow windows.
- */
+/* =========================================================================
+   Line-number gutter (View → Show Line Numbers)
+   Pinned to the viewport's left edge; JS sets each span's `top`.
+   ========================================================================= */
 body.show-line-numbers {
-    --mdv-gutter-w: 3.5em;
-    padding-left: var(--mdv-gutter-w);
+  --mdv-gutter-w: 3.4em;
+  padding-left: var(--mdv-gutter-w);
 }
-
 .line-gutter {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 3.5em;
-    border-right: 1px solid rgba(0, 0, 0, 0.10);
-    pointer-events: none;
-    user-select: none;
+  position: absolute;
+  left: 0; top: 0;
+  width: var(--mdv-gutter-w, 3.4em);
+  pointer-events: none;
+  user-select: none;
+  background: var(--gutter-bg, transparent);
+  border-right: 1px solid var(--gutter-rule);
 }
-
 .line-gutter .ln {
-    position: absolute;
-    left: 0.6em;
-    font: 11px/1 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-    color: rgba(0, 0, 0, 0.45);
-    white-space: nowrap;
+  position: absolute;
+  right: .85em;
+  font: var(--gutter-size, 11px)/1 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--gutter-fg);
+  white-space: nowrap;
+  text-align: right;
+}
+/* Block-anchored line numbers (a line that begins a rendered block) read
+   a touch stronger so the eye can map source → render. */
+.line-gutter .ln.ln-anchor { color: var(--gutter-fg-anchor, var(--gutter-fg)); }
+
+
+/* ====================== LAYER 2 — theme: Ink ======================= */
+/* =========================================================================
+   Theme A — "Ink"
+   Refined editorial. Newsreader serif headings, system-sans body, a calm
+   cool-slate dark canvas, teal reserved for links + the faintest heading tint.
+   Pairs with base.css. Fonts: Newsreader (headings).
+   ========================================================================= */
+
+:root {
+  /* Type */
+  --font-head: "Newsreader", Georgia, "Times New Roman", serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+
+  /* Scale — generous, reading-first */
+  --measure: 730px;
+  --pad-y: 56px;
+  --pad-x: 50px;
+  --body-size: 1.0625rem;   /* 17px */
+  --leading: 1.72;
+  --block-gap: 1.15em;
+  --li-gap: .35em;
+
+  --h1-size: 2.5rem;
+  --h2-size: 1.62rem;
+  --h3-size: 1.28rem;
+  --h4-size: 1.06rem;
+  --head-weight: 600;
+  --h1-weight: 560;
+  --head-mt: 2.05em;
+  --head-mb: .58em;
+  --head-leading: 1.18;
+  --head-tracking: 0;
+  --h1-tracking: -0.004em;
+  --h1-pad: .34em;
+  --hr-margin: 2.6em;
+  --cell-pad: .64em 1em;
+  --pre-pad: 1.05em 1.2em;
+
+  /* Color — dark (default; user runs dark) */
+  --bg:          #15171c;
+  --fg:          #c7cbd3;
+  --fg-strong:   #eceef3;
+  --fg-muted:    #9aa0ac;
+  --fg-faint:    #6b7280;
+
+  --accent:        #5cb7a6;
+  --accent-bright: #79ccbc;
+
+  --rule:        rgba(255,255,255,.085);
+  --rule-strong: rgba(255,255,255,.20);
+  --rule-w: 1px;
+
+  /* Headings: only the faintest teal whisper on h1 / h2 */
+  --h1-color: color-mix(in oklab, var(--fg-strong) 86%, var(--accent) 14%);
+  --h2-color: color-mix(in oklab, var(--fg-strong) 93%, var(--accent) 7%);
+
+  --strong-color: var(--fg-strong);
+  --strong-weight: 700;
+  --marker-color: var(--fg-faint);
+
+  --mark-bg: color-mix(in oklab, var(--accent) 26%, transparent);
+  --mark-fg: var(--fg-strong);
+
+  /* Inline code — warm sand, distinct from teal links */
+  --code-bg: rgba(255,255,255,.055);
+  --code-fg: #d9bd92;
+  --code-inline-size: .87em;
+
+  /* Blockquote → quiet callout */
+  --bq-bg: rgba(255,255,255,.028);
+  --bq-rule: var(--accent);
+  --bq-rule-w: 2px;
+  --bq-fg: var(--fg-muted);
+  --bq-strong: var(--fg-strong);
+  --bq-pad: .55em 1.1em;
+  --bq-radius: 0 7px 7px 0;
+
+  /* Tables */
+  --zebra: rgba(255,255,255,.022);
+  --row-hover: rgba(255,255,255,.045);
+  --table-size: .96em;
+
+  /* kbd */
+  --kbd-bg: #20242b;
+  --kbd-fg: #c7cbd3;
+  --kbd-border: rgba(255,255,255,.14);
+
+  /* checkbox */
+  --checkbox-border: rgba(255,255,255,.28);
+  --checkbox-bg: rgba(255,255,255,.04);
+  --checkbox-check: #15171c;
+
+  /* Code block + syntax — calm, low-saturation editorial set */
+  --hl_Background: #1a1d23;
+  --pre-border: rgba(255,255,255,.07);
+  --pre-radius: 10px;
+  --code-block-size: .855em;
+  --code-leading: 1.62;
+
+  --hl_Line_Number:  #555b66;
+  --hl_Block_Comment: #6b7280;
+  --hl_Line_Comment:  #6b7280;
+  --hl_Number:  #d9b06a;
+  --hl_String:  #9bc48a;
+  --hl_Escape:  #79ccbc;
+  --hl_String_Pre_Processor: #9bc48a;
+  --hl_Pre_Processor: #e58a7a;
+  --hl_Operator: #b9c0cc;
+  --hl_Interpolation: var(--accent);
+  --hl_Keyword-1: #e58a7a;
+  --hl_Keyword-2: #e58a7a;
+  --hl_Keyword-3: #c7cbd3;
+  --hl_Keyword-4: #c9a2e0;
+  --hl_Keyword-5: #e58a7a;
+  --hl_Keyword-6: #e58a7a;
+
+  /* Gutter */
+  --gutter-bg: transparent;
+  --gutter-rule: rgba(255,255,255,.07);
+  --gutter-fg: rgba(255,255,255,.30);
+  --gutter-fg-anchor: rgba(255,255,255,.52);
+  --gutter-size: 10.5px;
 }
 
-@media (prefers-color-scheme: dark) {
-    .line-gutter {
-        border-right-color: rgba(255, 255, 255, 0.10);
-    }
-    .line-gutter .ln {
-        color: rgba(255, 255, 255, 0.42);
-    }
+/* Newsreader looks best with optical sizing on. */
+.markdown-body :is(h1,h2,h3,h4,h5,h6) { font-optical-sizing: auto; }
+.markdown-body h1 { font-style: normal; }
+
+/* ---- Light appearance ---------------------------------------------------- */
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg:        #fbfaf7;
+    --fg:        #34373d;
+    --fg-strong: #1b1d22;
+    --fg-muted:  #6a6f78;
+    --fg-faint:  #9aa0a8;
+
+    --accent:        #0f8071;
+    --accent-bright: #0c6b5e;
+
+    --rule:        rgba(0,0,0,.10);
+    --rule-strong: rgba(0,0,0,.24);
+
+    --h1-color: color-mix(in oklab, var(--fg-strong) 84%, var(--accent) 16%);
+    --h2-color: color-mix(in oklab, var(--fg-strong) 92%, var(--accent) 8%);
+
+    --code-bg: rgba(20,30,28,.06);
+    --code-fg: #8a5a2b;
+
+    --bq-bg: rgba(15,128,113,.05);
+    --bq-fg: #555b62;
+
+    --zebra: rgba(0,0,0,.025);
+    --row-hover: rgba(0,0,0,.04);
+
+    --mark-bg: #fbe6a2;
+    --mark-fg: #2b2b1a;
+
+    --kbd-bg: #f1efe9;
+    --kbd-fg: #44474d;
+    --kbd-border: rgba(0,0,0,.18);
+
+    --checkbox-border: rgba(0,0,0,.32);
+    --checkbox-bg: #fff;
+    --checkbox-check: #fff;
+
+    --hl_Background: #f6f4ee;
+    --pre-border: rgba(0,0,0,.09);
+    --hl_Line_Number:  #b3aa99;
+    --hl_Block_Comment: #9a8f7d;
+    --hl_Line_Comment:  #9a8f7d;
+    --hl_Number:  #9a6a18;
+    --hl_String:  #4f7a3c;
+    --hl_Escape:  #0f8071;
+    --hl_String_Pre_Processor: #4f7a3c;
+    --hl_Pre_Processor: #b5523f;
+    --hl_Operator: #4c515a;
+    --hl_Keyword-1: #b5523f;
+    --hl_Keyword-2: #b5523f;
+    --hl_Keyword-3: #34373d;
+    --hl_Keyword-4: #7b4bb0;
+    --hl_Keyword-5: #b5523f;
+    --hl_Keyword-6: #b5523f;
+
+    --gutter-rule: rgba(0,0,0,.08);
+    --gutter-fg: rgba(0,0,0,.34);
+    --gutter-fg-anchor: rgba(0,0,0,.55);
+  }
 }
+
