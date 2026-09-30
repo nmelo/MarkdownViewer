@@ -606,9 +606,8 @@ final class ContentViewController: NSViewController {
         }
 
         // Apply the same mermaid-block transform `getCompleteHTML` does.
-        let processed = (!settings.renderAsCode && !settings.mermaidExtension.isDisabled && body.contains("language-mermaid"))
-            ? settings.transformMermaidBlocks(body)
-            : body
+        let hasMermaid = !settings.renderAsCode && !settings.mermaidExtension.isDisabled && body.contains("language-mermaid")
+        let processed = hasMermaid ? settings.transformMermaidBlocks(body) : body
 
         let bodyLiteral = ContentViewController.jsStringLiteral(processed)
         let sourceLines = settings.lastSourceLineCount
@@ -616,6 +615,11 @@ final class ContentViewController: NSViewController {
         (function(){
             const article = document.querySelector('article');
             if (!article) return false;
+            // A diagram arrived after the initial load, but the page never
+            // loaded the mermaid module (it is only injected when the document
+            // had a mermaid block at load time). Ask for a full load instead of
+            // leaving the block as raw text.
+            if (\(hasMermaid ? "true" : "false") && !(window.mermaid && typeof window.mermaid.run === 'function')) return 'reload';
             // Refresh the source-line count so the gutter resizes if the
             // file grew or shrank since the last render.
             article.dataset.sourceLines = '\(sourceLines)';
@@ -640,6 +644,12 @@ final class ContentViewController: NSViewController {
 
         webView.evaluateJavaScript(js) { [weak self] result, _ in
             guard let self = self else { return }
+            if (result as? String) == "reload" {
+                // The new body has a mermaid diagram and the page has no
+                // mermaid module loaded: only a full load can render it.
+                self.performFullLoad(file: file)
+                return
+            }
             if (result as? Bool) == true {
                 // Refresh the TOC from the freshly-swapped article.
                 self.webView.evaluateJavaScript(ContentViewController.tocExtractorJS)

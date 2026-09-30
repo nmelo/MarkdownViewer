@@ -857,6 +857,10 @@ MathJax = {
             s_footer += """
 <script type="module">
   import mermaid from "\(mermaidSrc)";
+  // Expose the module-scoped import so the live-reload path
+  // (ContentViewController.renderInPlace) can call mermaid.run() on
+  // diagrams swapped in after the initial load.
+  window.mermaid = mermaid;
   const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
   mermaid.initialize({
     startOnLoad: true,
